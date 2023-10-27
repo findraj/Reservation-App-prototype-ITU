@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pagecontroller.dart';
+import 'screens/pagecontroller.dart';
 
 void main() {
   runApp(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'profile_route.dart';
+import '../components/profile_route.dart';
 import 'home_screen.dart';
-import 'colors.dart';
+import '../components/colors.dart';
 import 'casovac_screen.dart';
 import 'rezervacia_screen.dart';
 
@@ -56,7 +56,6 @@ class _MyAppState extends State<MyApp> {
         title: Text(
           _tabTitles[_currentIndex],
           style: const TextStyle(
-            color: appBarIconColor,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
