@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 // Custom Colors
 const Color primaryColor = Color.fromARGB(255, 245, 251, 255);
@@ -9,7 +11,6 @@ const unselectedItemColor = Colors.black;
 const selectedFontSize = 16.0;
 const TextStyle selectedLabelStyle = TextStyle(fontWeight: FontWeight.bold);
 const TextStyle unselectedLabelStyle = TextStyle(fontWeight: FontWeight.normal);
-
 
 void main() {
   runApp(
@@ -28,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0; // Index of the currently selected tab
 
   final List<Widget> _tabs = [
-    const HomeScreen(),
+    HomeScreen(),
     const RezervaciaScreen(),
     const CasovacScreen(),
   ];
@@ -92,63 +93,61 @@ class _MyAppState extends State<MyApp> {
         controller: _pageController,
         children: _tabs,
       ),
- bottomNavigationBar: Container(
-    decoration: boxDecoration,
-    child: BottomNavigationBar(
-      currentIndex: _currentIndex,
-      onTap: (int newIndex) {
-        setState(() {
-          _currentIndex = newIndex;
-        });
+      bottomNavigationBar: Container(
+        decoration: boxDecoration,
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (int newIndex) {
+            setState(() {
+              _currentIndex = newIndex;
+            });
 
-        _pageController.animateToPage(
-          newIndex,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.ease,
-        );
-      },
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Domov',
+            _pageController.animateToPage(
+              newIndex,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Domov',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: 'Rezervácia',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.timer),
+              label: 'Časovač',
+            ),
+          ],
+          type: BottomNavigationBarType.shifting,
+          backgroundColor: appBarIconColor,
+          selectedItemColor: selectedItemColor,
+          unselectedItemColor: unselectedItemColor,
+          selectedFontSize: selectedFontSize,
+          selectedIconTheme: const IconThemeData(size: 30),
+          unselectedIconTheme: const IconThemeData(size: 20),
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          selectedLabelStyle: selectedLabelStyle,
+          unselectedLabelStyle: unselectedLabelStyle,
+          elevation: _currentIndex == 0 ? 2 : 0,
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today),
-          label: 'Rezervácia',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.timer),
-          label: 'Časovač',
-        ),
-      ],
-      type: BottomNavigationBarType.shifting,
-      backgroundColor: appBarIconColor,
-      selectedItemColor: selectedItemColor,
-      unselectedItemColor: unselectedItemColor,
-      selectedFontSize: selectedFontSize,
-      selectedIconTheme: const IconThemeData(size: 30),
-      unselectedIconTheme: const IconThemeData(size: 20),
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      selectedLabelStyle: selectedLabelStyle,
-      unselectedLabelStyle: unselectedLabelStyle,
-      elevation: _currentIndex == 0 ? 2 : 0,
-    ),
-  ),
-);
-
+      ),
+    );
   }
 }
 
-final BoxDecoration boxDecoration = const BoxDecoration(
+const BoxDecoration boxDecoration = BoxDecoration(
   boxShadow: <BoxShadow>[
     BoxShadow(
-      color: Colors.black,
+      color: Color.fromARGB(93, 0, 0, 0),
       blurRadius: 10,
     ),
   ],
 );
-
 
 class ProfileRoute extends StatelessWidget {
   const ProfileRoute({super.key});
@@ -198,13 +197,95 @@ class ProfileRoute extends StatelessWidget {
   }
 }
 
+class Reservation {
+  final int id;
+  final String machine;
+  final DateTime date;
+  final String location;
 
-class HomeScreen extends StatelessWidget {
+  Reservation({
+    required this.id,
+    required this.machine,
+    required this.date,
+    required this.location,
+  });
+
+  factory Reservation.fromJson(Map<String, dynamic> json) {
+    return Reservation(
+      id: json['id'],
+      machine: json['machine'],
+      date: DateTime.parse(json['date']), // Parse the date string to DateTime
+      location: json['location'],
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  _reservationsScreenState createState() => _reservationsScreenState();
+}
+
+class _reservationsScreenState extends State<HomeScreen> {
+  List<Reservation> _reservations = [];
+  @override
+  void initState() {
+    super.initState();
+    _fetchreservations();
+  }
+
+  Future<void> _fetchreservations() async {
+    final response =
+        await http.get(Uri.parse('http://markoshub.com:3000/api/reservations'));
+    if (response.statusCode == 200) {
+      final List<dynamic> json = jsonDecode(response.body);
+      setState(() {
+        _reservations = json.map((item) => Reservation.fromJson(item)).toList();
+      });
+    } else {
+      throw Exception('Failed to load reservations');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Domov'),
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(10),
+            child: Text(
+              'Rezervácie',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(8.0),
+              itemCount: _reservations.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: const BorderSide(width: 2)),
+                  title: Text(_reservations[index].machine),
+                  subtitle: Text("${_reservations[index].date}"),
+                  tileColor: primaryColor,
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: appBarBackgroundColor,
     );
   }
 }
