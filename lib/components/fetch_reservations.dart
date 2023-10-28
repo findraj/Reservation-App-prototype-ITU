@@ -1,62 +1,64 @@
 import 'dart:async';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'reservation.dart';
 
-  WidgetsFlutterBinding.ensureInitialized();
-  final database = openDatabase(
-    join(await getDatabasesPath(), 'reservation.db'),
-    onCreate: (db, version) {
-      return db.execute(
-        'CREATE TABLE reservations(id INTEGER PRIMARY KEY, machine TEXT, date INTEGER, location INTEGER)',
-      );
-    },
-    version: 1,
+Future<Database> initializeDB() async {
+  try {
+    final String path = join(await getDatabasesPath(), 'reservation.db');
+    print('Database path: $path'); // Print the database path
+    Database db = await openDatabase(
+      path, // Use the 'path' variable here
+      onCreate: (db, version) async {
+        await db.execute(
+          'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT)',
+        );
+      },
+      version: 1,
+    );
+    print('Database initialized successfully');
+    return db;
+  } catch (e) {
+    print('Error initializing the database: $e');
+    rethrow; // Rethrow the exception so that it can be handled elsewhere if needed.
+  }
+}
+
+
+Future<void> insertReservation(Reservation reservation, Database db) async {
+  await db.insert(
+    'reservations',
+    reservation.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
   );
+}
 
-  Future<void> insertReservation(Reservation reservation) async {
-    final db = await database;
+Future<List<Reservation>> reservations(Database db) async {
+  final List<Map<String, dynamic>> maps = await db.query('reservations');
 
-    await db.insert(
-      'reservation',
-      reservation.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+  return List.generate(maps.length, (i) {
+    return Reservation(
+      id: maps[i]['id'] as int,
+      machine: maps[i]['machine'] as String,
+      date: DateTime.fromMillisecondsSinceEpoch(maps[i]['date'] as int),
+      location: maps[i]['location'] as String,
     );
-  }
+  });
+}
 
-  Future<List<Reservation>> reservations() async {
-    final db = await database;
+Future<void> updateReservation(Reservation reservation, Database db) async {
+  await db.update(
+    'reservations',
+    reservation.toMap(),
+    where: 'id = ?',
+    whereArgs: [reservation.id],
+  );
+}
 
-    final List<Map<String, dynamic>> maps = await db.query('dogs');
-
-    return List.generate(maps.length, (i) {
-      return Reservation(
-        id: maps[i]['id'] as int,
-        machine: maps[i]['machine'] as String,
-        date: maps[i]['date'] as DateTime,
-        location: maps[i]['location'] as String
-      );
-    });
-  }
-
-  Future<void> updateReservation(Reservation reservation) async {
-    final db = await database;
-
-    await db.update(
-      'reservations',
-      reservation.toMap(),
-      where: 'id = ?',
-      whereArgs: [reservation.id],
-    );
-  }
-
-  Future<void> deleteReservation(int id) async {
-    final db = await database;
-
-    await db.delete(
-      'reservations',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
+Future<void> deleteReservation(int id, Database db) async {
+  await db.delete(
+    'reservations',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}

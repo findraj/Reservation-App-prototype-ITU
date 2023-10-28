@@ -1,4 +1,3 @@
-import 'dart:html';
 
 class Reservation {
   final int id;
@@ -12,13 +11,13 @@ class Reservation {
     required this.date,
     required this.location,
   });
-}
 
-Map<String, dynamic> toMap(){
-  return {
-    'id': Id,
-    'machine': machine,
-    'date': date,
-    'location': location
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'machine': machine, 'date': date.millisecondsSinceEpoch, 'location': location};
+  }
+
+    @override
+  String toString() {
+    return 'Reservation{id: $id, machine: $machine, date: $date, location: $location}';
   }
 }
