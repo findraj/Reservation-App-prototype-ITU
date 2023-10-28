@@ -99,7 +99,12 @@ class HomeScreen extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // Add your button click action here
+                  var newReserv = Reservation(
+                    id: DateTime.now().millisecondsSinceEpoch,
+                    machine: 'susicka',
+                    date: DateTime.now(),
+                    location: 'PPV');
+                  insertReservation(newReserv, database);
                 },
                 child: const Text('Nová rezervácia'),
               ),
