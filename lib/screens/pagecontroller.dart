@@ -4,28 +4,22 @@ import 'home_screen.dart';
 import '../components/colors.dart';
 import 'casovac_screen.dart';
 import 'rezervacia_screen.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: MyApp(),
-    ),
-  );
-}
+class Page_Controller extends StatefulWidget {
+  final Database database;
+  Page_Controller(this.database);
 
-class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _Page_ControllerState createState() => _Page_ControllerState(database);
 }
 
-class _MyAppState extends State<MyApp> {
+class _Page_ControllerState extends State<Page_Controller> {
+  final Database database;
+  _Page_ControllerState(this.database);
   int _currentIndex = 0; // Index of the currently selected tab
 
-  final List<Widget> _tabs = [
-    HomeScreen(),
-    const RezervaciaScreen(),
-    const CasovacScreen(),
-  ];
+  List<Widget> _tabs = [];
 
   final List<String> _tabTitles = [
     'Domov',
@@ -39,6 +33,13 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
+
+    // Initialize _tabs with the HomeScreen after database is set
+    _tabs = [
+      HomeScreen(database),
+      const RezervaciaScreen(),
+      const CasovacScreen(),
+    ];
   }
 
   @override
