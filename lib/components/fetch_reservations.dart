@@ -1,64 +1,62 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'colors.dart';
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'reservation.dart';
 
-class FetchApiWidget extends StatelessWidget {
-  const FetchApiWidget({super.key});
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = openDatabase(
+    join(await getDatabasesPath(), 'reservation.db'),
+    onCreate: (db, version) {
+      return db.execute(
+        'CREATE TABLE reservations(id INTEGER PRIMARY KEY, machine TEXT, date INTEGER, location INTEGER)',
+      );
+    },
+    version: 1,
+  );
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: fetchReservations(),
-      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  margin: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Card(
-                    elevation: 5,
-                    child: ListTile(
-                      title: Text(snapshot.data![index]['machine'].toString()),
-                      subtitle: Text(snapshot.data![index]['date'].toString()),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.location_pin),
-                          Text(snapshot.data![index]['location'].toString()),
-                        ],
-                      ),
-                      tileColor: primaryColor,
-                    ),
-                  ),
-                );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("Error: ${snapshot.error}"),
-            );
-          }
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
+  Future<void> insertReservation(Reservation reservation) async {
+    final db = await database;
+
+    await db.insert(
+      'reservation',
+      reservation.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<List<dynamic>> fetchReservations() async {
-    var result =
-        await http.get(Uri.parse('http://markoshub.com:3000/api/reservations'));
-    if (result.statusCode == 200) {
-      return jsonDecode(result.body);
-    } else {
-      throw Exception('Failed to load reservations');
-    }
+  Future<List<Reservation>> reservations() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query('dogs');
+
+    return List.generate(maps.length, (i) {
+      return Reservation(
+        id: maps[i]['id'] as int,
+        machine: maps[i]['machine'] as String,
+        date: maps[i]['date'] as DateTime,
+        location: maps[i]['location'] as String
+      );
+    });
   }
-}
+
+  Future<void> updateReservation(Reservation reservation) async {
+    final db = await database;
+
+    await db.update(
+      'reservations',
+      reservation.toMap(),
+      where: 'id = ?',
+      whereArgs: [reservation.id],
+    );
+  }
+
+  Future<void> deleteReservation(int id) async {
+    final db = await database;
+
+    await db.delete(
+      'reservations',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }

@@ -16,6 +16,7 @@ migrate_working_dir/
 /android/
 .metadata
 pubspec.lock
+pubspec.yaml
 analysis_options.yaml
 
 
