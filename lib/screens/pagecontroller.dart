@@ -34,7 +34,7 @@ class _Page_ControllerState extends State<Page_Controller> {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
 
-    // Initialize _tabs with the HomeScreen after database is set
+    // Initialize _tabs with the HomeScreen after the database is set
     _tabs = [
       HomeScreen(database),
       const RezervaciaScreen(),
@@ -57,8 +57,9 @@ class _Page_ControllerState extends State<Page_Controller> {
         title: Text(
           _tabTitles[_currentIndex],
           style: const TextStyle(
-            fontSize: 18.0,
+            fontSize: 20.0,
             fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         actions: [

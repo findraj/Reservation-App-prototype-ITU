@@ -20,7 +20,7 @@ class ProfileRoute extends StatelessWidget {
           "Profil",
           style: TextStyle(
             color: appBarIconColor,
-            fontSize: 18.0,
+            fontSize: 20.0,
             fontWeight: FontWeight.bold,
           ),
         ),
