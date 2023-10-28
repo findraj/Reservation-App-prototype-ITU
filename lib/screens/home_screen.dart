@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:vyperto/components/colors.dart';
 import 'package:vyperto/components/fetch_reservations.dart';
@@ -92,6 +94,17 @@ class HomeScreen extends StatelessWidget {
               },
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // Add your button click action here
+                },
+                child: const Text('Nová rezervácia'),
+              ),
+            ],
+          )
         ],
       ),
       backgroundColor: primaryColor,
