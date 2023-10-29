@@ -1,8 +1,9 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class RezervaciaScreen extends StatefulWidget {
-  const RezervaciaScreen({super.key});
+  const RezervaciaScreen({Key? key}) : super(key: key);
+
   @override
   _ReservationScreenState createState() => _ReservationScreenState();
 }
@@ -27,12 +28,22 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Rezervácia'),
-      ),
       body: Column(
         children: [
-          Expanded(
+          Container(
+            margin: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 215, 215, 215), 
+              borderRadius: BorderRadius.circular(10.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromARGB(104, 158, 158, 158),
+                  blurRadius: 8,
+                  offset: Offset(4, 8),
+                ),
+              ],
+            ),
             child: TableCalendar(
               firstDay: DateTime.utc(2010, 10, 16),
               lastDay: DateTime.utc(2030, 3, 14),
@@ -68,22 +79,22 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
               return _buildTimeButton(time);
             }).toList(),
           ),
-          SizedBox(height: 10.0),
+          const SizedBox(height: 10.0),
           Wrap(
             spacing: 10.0,
             children: availableTimes.getRange(4, 8).map((time) {
               return _buildTimeButton(time);
             }).toList(),
           ),
-          SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () {
               // Handle the confirmation action here
               print('Date: $_selectedDay, Time: $_selectedTime');
             },
-            child: Text('Potvrdiť'),
+            child: const Text('Potvrdiť'),
           ),
-          SizedBox(height: 20.0),
+          const SizedBox(height: 20.0),
         ],
       ),
     );
