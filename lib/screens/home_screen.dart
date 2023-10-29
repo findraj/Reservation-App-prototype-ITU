@@ -1,14 +1,33 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:vyperto/components/colors.dart';
 import 'package:vyperto/components/fetch_reservations.dart';
 import 'package:vyperto/components/reservation.dart';
 import 'package:sqflite/sqflite.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final Database database;
+
   HomeScreen(this.database);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Future<List<Reservation>>? _reservations;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshReservations();
+  }
+
+  _refreshReservations() {
+    setState(() {
+      _reservations = reservations(widget.database);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +75,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Expanded(
             child: FutureBuilder<List<Reservation>>(
-              future: reservations(database),
+              future: _reservations,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -75,17 +94,22 @@ class HomeScreen extends StatelessWidget {
                             date: DateTime.now(),
                             location: 'No location',
                           );
-
                       return Card(
-                        elevation: 5, // Set the elevation
+                        elevation: 5,
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(12), // Add rounded corners
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: ListTile(
                           title: Text("Machine: ${reservation.machine}"),
                           subtitle: Text("Location: ${reservation.location}"),
-                          // Add more information as needed
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () async {
+                              await deleteReservation(
+                                  reservation.id, widget.database);
+                              _refreshReservations();
+                            },
+                          ),
                         ),
                       );
                     },
@@ -100,11 +124,12 @@ class HomeScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   var newReserv = Reservation(
-                    id: DateTime.now().millisecondsSinceEpoch,
-                    machine: 'susicka',
-                    date: DateTime.now(),
-                    location: 'PPV');
-                  insertReservation(newReserv, database);
+                      id: DateTime.now().millisecondsSinceEpoch,
+                      machine: 'susicka',
+                      date: DateTime.now(),
+                      location: 'PPV');
+                  insertReservation(newReserv, widget.database);
+                  _refreshReservations();
                 },
                 child: const Text('Nová rezervácia'),
               ),
