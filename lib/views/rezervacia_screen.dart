@@ -89,7 +89,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () {
-              // Handle the confirmation action here
+              // 
               print('Date: $_selectedDay, Time: $_selectedTime');
             },
             child: const Text('Potvrdiť'),

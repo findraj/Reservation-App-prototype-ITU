@@ -20,7 +20,7 @@ Future<Database> initializeDB() async {
     return db;
   } catch (e) {
     print('Error initializing the database: $e');
-    rethrow; // Rethrow the exception so that it can be handled elsewhere if needed.
+    rethrow;
   }
 }
 

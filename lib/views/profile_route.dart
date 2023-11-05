@@ -27,7 +27,7 @@ class ProfileRoute extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              // Handle profile button action
+              //
             },
             icon: const Icon(
               Icons.account_circle,
