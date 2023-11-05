@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'colors.dart';
+import 'package:vyperto/assets/colors.dart';
 
 class ProfileRoute extends StatelessWidget {
   const ProfileRoute({super.key});

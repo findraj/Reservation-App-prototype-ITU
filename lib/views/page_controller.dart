@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import '../components/profile_route.dart';
+import 'package:vyperto/assets/colors.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:vyperto/view-model/reservation_provider.dart';
+import 'package:provider/provider.dart';
+import 'profile_route.dart';
 import 'home_screen.dart';
-import '../components/colors.dart';
 import 'casovac_screen.dart';
 import 'rezervacia_screen.dart';
-import 'package:sqflite/sqflite.dart';
 
 class Page_Controller extends StatefulWidget {
   final Database database;
@@ -34,12 +36,13 @@ class _Page_ControllerState extends State<Page_Controller> {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
 
-    // Initialize _tabs with the HomeScreen after the database is set
     _tabs = [
       HomeScreen(database),
       const RezervaciaScreen(),
       const CasovacScreen(),
     ];
+    Provider.of<ReservationProvider>(context, listen: false).fetchReservations();
+
   }
 
   @override

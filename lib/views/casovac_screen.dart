@@ -47,29 +47,29 @@ class _CasovacScreenState extends State<CasovacScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 40),
-            Text('00:00:00', style: TextStyle(fontSize: 60)),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
+            const Text('00:00:00', style: TextStyle(fontSize: 60)),
+            const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(onPressed: () {}, child: Text('Start')),
-                ElevatedButton(onPressed: () {}, child: Text('Stop')),
-                ElevatedButton(onPressed: () {}, child: Text('Reset'))
+                ElevatedButton(onPressed: () {}, child: const Text('Start')),
+                ElevatedButton(onPressed: () {}, child: const Text('Stop')),
+                ElevatedButton(onPressed: () {}, child: const Text('Reset'))
               ],
             ),
-            SizedBox(height: 30),
-            Divider(),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 30),
+            const Divider(),
+            const SizedBox(height: 20),
+            const Text(
               'Presets',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _customTimeTile('7 min'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _customTimeTile('48 min'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _customTimeTile('90 min'),
           ],
         ),
@@ -84,7 +84,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
       decoration: BoxDecoration(
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color.fromARGB(255, 194, 178, 178), width: 1),
+        border: Border.all(color: const Color.fromARGB(255, 194, 178, 178), width: 1),
       ),
       child: Text(time),
     );

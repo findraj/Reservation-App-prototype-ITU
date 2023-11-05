@@ -1,33 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:vyperto/components/colors.dart';
-import 'package:vyperto/components/fetch_reservations.dart';
-import 'package:vyperto/components/reservation.dart';
+import 'package:vyperto/assets/colors.dart';
+import 'package:vyperto/view-model/reservation_provider.dart';
+import 'package:vyperto/model/reservation.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   final Database database;
-
   HomeScreen(this.database);
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  Future<List<Reservation>>? _reservations;
-
-  @override
-  void initState() {
-    super.initState();
-    _refreshReservations();
-  }
-
-  _refreshReservations() {
-    setState(() {
-      _reservations = reservations(widget.database);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,26 +55,20 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.black,
           ),
           Expanded(
-            child: FutureBuilder<List<Reservation>>(
-              future: _reservations,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                } else if (snapshot.data?.isEmpty ?? true) {
-                  return Center(child: Text("No reservations found."));
+            child: Consumer<ReservationProvider>(
+              builder: (context, reservationProvider, child) {
+                final reservationsList = reservationProvider.reservationsList;
+
+                if (reservationsList.isEmpty) {
+                  return const Center(child: Text("No reservations found."));
                 } else {
                   return ListView.builder(
-                    itemCount: snapshot.data?.length ?? 0,
+                    itemCount: reservationsList.length,
                     itemBuilder: (context, index) {
-                      Reservation reservation = snapshot.data?[index] ??
-                          Reservation(
-                            id: 0,
-                            machine: 'No machine',
-                            date: DateTime.now(),
-                            location: 'No location',
-                          );
+                      Reservation reservation = reservationsList[index];
+                      String formattedDate = DateFormat('yyyy-MM-dd').format(reservation.date); // Date formatting
+                      String formattedTime = DateFormat('HH:mm').format(reservation.date); // Time formatting
+
                       return Card(
                         elevation: 5,
                         shape: RoundedRectangleBorder(
@@ -101,13 +76,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: ListTile(
                           title: Text("Machine: ${reservation.machine}"),
-                          subtitle: Text("Location: ${reservation.location}"),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height:5),
+                              Text("Location: ${reservation.location}"),
+                              const SizedBox(height:5),
+                              Text("Date: $formattedDate"), 
+                              const SizedBox(height:5),
+                              Text("Time: $formattedTime"), 
+                            ],
+                          ),
                           trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
-                              await deleteReservation(
-                                  reservation.id, widget.database);
-                              _refreshReservations();
+                              reservationProvider.providerDeleteReservation(reservation.id);
                             },
                           ),
                         ),
@@ -128,8 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       machine: 'susicka',
                       date: DateTime.now(),
                       location: 'PPV');
-                  insertReservation(newReserv, widget.database);
-                  _refreshReservations();
+                  Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                 },
                 child: const Text('Nová rezervácia'),
               ),

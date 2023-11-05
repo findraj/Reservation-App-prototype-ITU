@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'reservation.dart';
+import 'package:vyperto/model/reservation.dart';
 
 Future<Database> initializeDB() async {
   try {
     final String path = join(await getDatabasesPath(), 'reservation.db');
-    print('Database path: $path'); // Print the database path
+    print('Database path: $path');
     Database db = await openDatabase(
-      path, // Use the 'path' variable here
+      path,
       onCreate: (db, version) async {
         await db.execute(
           'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT)',
@@ -23,7 +23,6 @@ Future<Database> initializeDB() async {
     rethrow; // Rethrow the exception so that it can be handled elsewhere if needed.
   }
 }
-
 
 Future<void> insertReservation(Reservation reservation, Database db) async {
   await db.insert(
