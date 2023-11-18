@@ -34,7 +34,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             margin: const EdgeInsets.all(10.0),
             padding: const EdgeInsets.all(10.0),
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 215, 215, 215), 
+              color: const Color.fromARGB(255, 215, 215, 215),
               borderRadius: BorderRadius.circular(10.0),
               boxShadow: const [
                 BoxShadow(
@@ -89,7 +89,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () {
-              // 
+              //
               print('Date: $_selectedDay, Time: $_selectedTime');
             },
             child: const Text('Potvrdiť'),
