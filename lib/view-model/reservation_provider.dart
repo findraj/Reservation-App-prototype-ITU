@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:vyperto/api/database_api.dart';
+import 'package:vyperto/api/reservation_api.dart';
 import 'package:vyperto/model/reservation.dart';
 
 class ReservationProvider with ChangeNotifier {

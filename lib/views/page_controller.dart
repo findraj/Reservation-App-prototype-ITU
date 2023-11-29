@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vyperto/assets/colors.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
+import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'profile_route.dart';
 import 'home_screen.dart';
@@ -9,16 +10,16 @@ import 'casovac_screen.dart';
 import 'rezervacia_screen.dart';
 
 class Page_Controller extends StatefulWidget {
-  final Database database;
-  Page_Controller(this.database);
+  final Database reservationDatabase;
+  final Database profileDatabase;
+
+  Page_Controller(this.reservationDatabase, this.profileDatabase);
 
   @override
-  _Page_ControllerState createState() => _Page_ControllerState(database);
+  _Page_ControllerState createState() => _Page_ControllerState();
 }
 
 class _Page_ControllerState extends State<Page_Controller> {
-  final Database database;
-  _Page_ControllerState(this.database);
   int _currentIndex = 0; // Index of the currently selected tab
 
   List<Widget> _tabs = [];
@@ -36,21 +37,32 @@ class _Page_ControllerState extends State<Page_Controller> {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
 
+    // Since we are using Providers to handle databases, no need to pass databases to widgets.
     _tabs = [
-      HomeScreen(database),
+      HomeScreen(),
       const RezervaciaScreen(),
       const CasovacScreen(),
     ];
-    Provider.of<ReservationProvider>(context, listen: false).fetchReservations();
 
+    // Since ReservationProvider is initialized at the start, we fetch reservations here
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ReservationProvider>().fetchReservations();
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProfileProvider>().fetchProfile(1);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Use Provider.of or context.watch to get the Database instance if needed
+    // Example: Database db = Provider.of<ReservationProvider>(context).database;
+
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
-        backgroundColor: appBarBackgroundColor,
+          backgroundColor: appBarBackgroundColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(16.0),
@@ -80,18 +92,18 @@ class _Page_ControllerState extends State<Page_Controller> {
             ),
           ),
         ],
-      ),
+          ),
       body: PageView(
-        onPageChanged: (int newIndex) {
+          onPageChanged: (int newIndex) {
           setState(() {
             _currentIndex = newIndex;
           });
         },
         controller: _pageController,
         children: _tabs,
-      ),
+          ),
       bottomNavigationBar: Container(
-        decoration: boxDecoration,
+          decoration: boxDecoration,
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (int newIndex) {
@@ -132,7 +144,7 @@ class _Page_ControllerState extends State<Page_Controller> {
           unselectedLabelStyle: unselectedLabelStyle,
           elevation: _currentIndex == 0 ? 2 : 0,
         ),
-      ),
+          ),
     );
   }
 }

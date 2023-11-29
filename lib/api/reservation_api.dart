@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vyperto/model/reservation.dart';
 
-Future<Database> initializeDB() async {
+Future<Database> initializeReservationDB() async {
   try {
     final String path = join(await getDatabasesPath(), 'reservation.db');
     print('Database path: $path');
@@ -61,3 +61,4 @@ Future<void> deleteReservation(int id, Database db) async {
     whereArgs: [id],
   );
 }
+

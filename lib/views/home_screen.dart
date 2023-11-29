@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:vyperto/assets/colors.dart';
+import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
 import 'package:vyperto/model/reservation.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:vyperto/model/profile.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends StatelessWidget {
-  final Database database;
-  HomeScreen(this.database);
-
   void _showPinDialog(BuildContext context) async {
     await showDialog(
       context: context,
@@ -45,34 +43,61 @@ class HomeScreen extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Ahoj, Marko!",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
+                  Profile fetchedProfile = profileProvider.profile;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Ahoj, ${fetchedProfile.meno}!",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          // Align the Column to the right
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                "Zostatok: ${fetchedProfile.zostatok}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                    Text(
-                      "Zostatok : XXXX",
-                      style: TextStyle(
-                        fontSize: 13,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Čas vyprať ?",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          Text(
+                            "Body: ${fetchedProfile.body}",
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                Text(
-                  "Čas vyprať ?",
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                    ],
+                  );
+                }),
               ],
             ),
           ),
@@ -113,8 +138,7 @@ class HomeScreen extends StatelessWidget {
                       bool isNearest = index == 0; // Najblizsia rezervacia ma index 0 po sorte
 
                       return Card(
-                        color: DateTime.now().isAfter(reservation.date) ? const Color.fromARGB(255, 220, 169, 160) : null, // Nastav farbu karty podla casu
-                        elevation: 5,
+                        elevation: isNearest ? 10 : 3,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -126,9 +150,17 @@ class HomeScreen extends StatelessWidget {
                               const SizedBox(height: 5),
                               Text("Location: ${reservation.location}"),
                               const SizedBox(height: 5),
-                              Text("Date: $formattedDate"),
+                              Text("Date: $formattedDate",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isNearest && DateTime.now().isAfter(reservation.date) ? Colors.red : null, // Ak je najblizsia rezervacia a je po jej case, tak cervene
+                                  )),
                               const SizedBox(height: 5),
-                              Text("Time: $formattedTime"),
+                              Text("Time: $formattedTime",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: isNearest && DateTime.now().isAfter(reservation.date) ? Colors.red : null,
+                                  )),
                             ],
                           ),
                           trailing: Row(
