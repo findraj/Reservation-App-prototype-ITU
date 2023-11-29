@@ -10,6 +10,33 @@ class HomeScreen extends StatelessWidget {
   final Database database;
   HomeScreen(this.database);
 
+  void _showPinDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController pinController = TextEditingController();
+        return AlertDialog(
+          title: const Text('Zadajte PIN z obrazovky'),
+          content: TextField(
+            controller: pinController,
+            keyboardType: TextInputType.number,
+            maxLength: 4,
+            decoration: const InputDecoration(hintText: 'Zadajte 4-miestny PIN'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Overiť'),
+              onPressed: () {
+                //# Overenie pinu
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,9 +85,23 @@ class HomeScreen extends StatelessWidget {
             child: Consumer<ReservationProvider>(
               builder: (context, reservationProvider, child) {
                 final reservationsList = reservationProvider.reservationsList;
+                reservationsList.sort((a, b) => a.date.compareTo(b.date));
 
                 if (reservationsList.isEmpty) {
-                  return const Center(child: Text("No reservations found."));
+                  return Container(
+                    alignment: Alignment.center,
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text("Neboli nájdené žiadne rezervácie.."),
+                          SizedBox(height: 10),
+                          Text("😢", style: TextStyle(fontSize: 24)),
+                        ],
+                      ),
+                    ),
+                  );
                 } else {
                   return ListView.builder(
                     itemCount: reservationsList.length,
@@ -69,7 +110,10 @@ class HomeScreen extends StatelessWidget {
                       String formattedDate = DateFormat('yyyy-MM-dd').format(reservation.date); // Date formatting
                       String formattedTime = DateFormat('HH:mm').format(reservation.date); // Time formatting
 
+                      bool isNearest = index == 0; // Najblizsia rezervacia ma index 0 po sorte
+
                       return Card(
+                        color: DateTime.now().isAfter(reservation.date) ? const Color.fromARGB(255, 220, 169, 160) : null, // Nastav farbu karty podla casu
                         elevation: 5,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -79,19 +123,45 @@ class HomeScreen extends StatelessWidget {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height:5),
+                              const SizedBox(height: 5),
                               Text("Location: ${reservation.location}"),
-                              const SizedBox(height:5),
-                              Text("Date: $formattedDate"), 
-                              const SizedBox(height:5),
-                              Text("Time: $formattedTime"), 
+                              const SizedBox(height: 5),
+                              Text("Date: $formattedDate"),
+                              const SizedBox(height: 5),
+                              Text("Time: $formattedTime"),
                             ],
                           ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () async {
-                              reservationProvider.providerDeleteReservation(reservation.id);
-                            },
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min, // Ensures the column only takes up needed space
+                            children: [
+                              if (isNearest)
+                                TextButton(
+                                  style: ButtonStyle(
+                                    elevation: MaterialStateProperty.all<double>(5),
+                                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 75, 204, 141)),
+                                    padding: MaterialStateProperty.all<EdgeInsets>(
+                                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'START',
+                                    style: TextStyle(fontSize: 12, color: Colors.black),
+                                  ),
+                                  onPressed: () {
+                                    _showPinDialog(context);
+                                  },
+                                ),
+                              const SizedBox(width: 15),
+                              IconButton(
+                                iconSize: 24, // Adjust icon size if necessary
+                                padding: EdgeInsets.zero, // Remove any padding around the icon button
+                                constraints: const BoxConstraints(), // Reset constraints to allow for smaller size
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () async {
+                                  reservationProvider.providerDeleteReservation(reservation.id);
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -106,11 +176,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  var newReserv = Reservation(
-                      id: DateTime.now().millisecondsSinceEpoch,
-                      machine: 'susicka',
-                      date: DateTime.now(),
-                      location: 'PPV');
+                  var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'susicka', date: DateTime.now(), location: 'PPV');
                   Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                 },
                 child: const Text('Nová rezervácia'),
