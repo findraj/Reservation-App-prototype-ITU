@@ -15,22 +15,18 @@ class ProfileRoute extends StatefulWidget {
 class _ProfileRouteState extends State<ProfileRoute> {
   String _selectedLocation = 'PPV'; // Default value for selected location
   List<String> locations = ['PPV', 'Purkyne']; // Available locations
-  TextEditingController _codeController =
-      TextEditingController(); // Controller for code input
+  TextEditingController _codeController = TextEditingController(); // Controller for code input
 
   // State variables for user information
   String userName = 'Marko';
   String userSurname = 'Olesak';
-  String userProfilePicUrl =
-      'https://example.com/profile-pic.jpg'; // Replace with actual URL
+  String userProfilePicUrl = 'https://avatar.cdnpk.net/23.jpg'; // Replace with actual URL
 
   // Function to edit user profile
   Future<void> _editProfile() async {
     final ImagePicker _picker = ImagePicker();
-    TextEditingController _nameController =
-        TextEditingController(text: userName);
-    TextEditingController _surnameController =
-        TextEditingController(text: userSurname);
+    TextEditingController _nameController = TextEditingController(text: userName);
+    TextEditingController _surnameController = TextEditingController(text: userSurname);
 
     showDialog(
       context: context,
@@ -50,12 +46,10 @@ class _ProfileRouteState extends State<ProfileRoute> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final XFile? image =
-                      await _picker.pickImage(source: ImageSource.gallery);
+                  final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
                   if (image != null) {
                     setState(() {
-                      userProfilePicUrl =
-                          image.path; // Update the profile picture URL
+                      userProfilePicUrl = image.path; // Update the profile picture URL
                     });
                   }
                 },
@@ -191,10 +185,8 @@ class _ProfileRouteState extends State<ProfileRoute> {
           const Divider(),
           ...historyReservations
               .map((reservation) => ListTile(
-                    title: Text(
-                        'Rezervácia: ${reservation.machine}, Dátum: ${reservation.date}, Miesto: ${reservation.location}'),
-                    leading: Icon(Icons.history,
-                        color: Theme.of(context).primaryColor),
+                    title: Text('Rezervácia: ${reservation.machine}, Dátum: ${reservation.date}, Miesto: ${reservation.location}'),
+                    leading: Icon(Icons.history, color: Theme.of(context).primaryColor),
                   ))
               .toList(),
         ],

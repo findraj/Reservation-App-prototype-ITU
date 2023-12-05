@@ -8,6 +8,7 @@ import 'profile_route.dart';
 import 'home_screen.dart';
 import 'casovac_screen.dart';
 import 'rezervacia_screen.dart';
+import 'odmeny_screen.dart';
 
 class Page_Controller extends StatefulWidget {
   final Database reservationDatabase;
@@ -28,6 +29,7 @@ class _Page_ControllerState extends State<Page_Controller> {
     'Domov',
     'Rezervácia',
     'Časovač',
+    'Odmeny',
   ];
 
   late PageController _pageController;
@@ -42,6 +44,7 @@ class _Page_ControllerState extends State<Page_Controller> {
       HomeScreen(),
       const RezervaciaScreen(),
       const CasovacScreen(),
+      const OdmenyScreen(),
     ];
 
     // Since ReservationProvider is initialized at the start, we fetch reservations here
@@ -62,7 +65,7 @@ class _Page_ControllerState extends State<Page_Controller> {
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
-          backgroundColor: appBarBackgroundColor,
+        backgroundColor: appBarBackgroundColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(16.0),
@@ -92,18 +95,18 @@ class _Page_ControllerState extends State<Page_Controller> {
             ),
           ),
         ],
-          ),
+      ),
       body: PageView(
-          onPageChanged: (int newIndex) {
+        onPageChanged: (int newIndex) {
           setState(() {
             _currentIndex = newIndex;
           });
         },
         controller: _pageController,
         children: _tabs,
-          ),
+      ),
       bottomNavigationBar: Container(
-          decoration: boxDecoration,
+        decoration: boxDecoration,
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (int newIndex) {
@@ -130,6 +133,10 @@ class _Page_ControllerState extends State<Page_Controller> {
               icon: Icon(Icons.timer),
               label: 'Časovač',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.card_giftcard),
+              label: 'Odmeny',
+            ),
           ],
           type: BottomNavigationBarType.shifting,
           backgroundColor: appBarIconColor,
@@ -144,7 +151,7 @@ class _Page_ControllerState extends State<Page_Controller> {
           unselectedLabelStyle: unselectedLabelStyle,
           elevation: _currentIndex == 0 ? 2 : 0,
         ),
-          ),
+      ),
     );
   }
 }
