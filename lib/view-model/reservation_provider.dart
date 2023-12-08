@@ -31,4 +31,9 @@ class ReservationProvider with ChangeNotifier {
     await deleteReservation(id, database);
     await fetchReservations();
   }
+
+  Future<bool> providerCheckPin(int pin) async {
+    final bool isPinCorrect = await checkPin(pin, database);
+    return isPinCorrect;
+  }
 }

@@ -62,3 +62,18 @@ Future<void> deleteReservation(int id, Database db) async {
   );
 }
 
+Future<bool> checkPin(int pin, Database db) async {
+  // final List<Map<String, dynamic>> maps = await db.query('reservations');
+  // for (int i = 0; i < maps.length; i++) {
+  //   if (maps[i]['id'] == pin) {
+  //     return true;
+  //   }
+  // }
+  DateTime now = DateTime.now();
+  String day = now.day.toString().padLeft(2, '0'); // DD
+  String month = now.month.toString().padLeft(2, '0'); // MM
+  int todaysPin = int.parse(day + month); // DDMM pin pre dnesny den 
+
+  // Skontroluj ci sa pin rovna datumu
+  return pin == todaysPin;
+}
