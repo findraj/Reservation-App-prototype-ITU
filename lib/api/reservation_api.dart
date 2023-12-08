@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/rendering.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:vyperto/model/reservation.dart';
@@ -11,7 +12,8 @@ Future<Database> initializeReservationDB() async {
       path,
       onCreate: (db, version) async {
         await db.execute(
-          'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT)',
+          // 'DROP TABLE IF EXISTS reservations',
+          'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT, isPinVerified INTEGER)',
         );
       },
       version: 1,
@@ -41,6 +43,7 @@ Future<List<Reservation>> reservations(Database db) async {
       machine: maps[i]['machine'] as String,
       date: DateTime.fromMillisecondsSinceEpoch(maps[i]['date'] as int),
       location: maps[i]['location'] as String,
+      isPinVerified: maps[i]['isPinVerified'] as int,
     );
   });
 }
@@ -62,18 +65,16 @@ Future<void> deleteReservation(int id, Database db) async {
   );
 }
 
-Future<bool> checkPin(int pin, Database db) async {
-  // final List<Map<String, dynamic>> maps = await db.query('reservations');
-  // for (int i = 0; i < maps.length; i++) {
-  //   if (maps[i]['id'] == pin) {
-  //     return true;
-  //   }
-  // }
+Future<bool> checkPin(int pin, Reservation reservation, Database db) async {
   DateTime now = DateTime.now();
   String day = now.day.toString().padLeft(2, '0'); // DD
   String month = now.month.toString().padLeft(2, '0'); // MM
   int todaysPin = int.parse(day + month); // DDMM pin pre dnesny den 
 
+  if (todaysPin == pin) {
+    reservation.isPinVerified = 1;
+    await updateReservation(reservation, db);
+  }
   // Skontroluj ci sa pin rovna datumu
-  return pin == todaysPin;
+  return reservation.isPinVerified == 1 ? true : false;
 }

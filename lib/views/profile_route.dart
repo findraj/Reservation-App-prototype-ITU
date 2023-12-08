@@ -88,6 +88,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
           date: DateTime.now().subtract(Duration(days: random.nextInt(30))),
           location: locations[random.nextInt(locations.length)],
           machine: 'Machine ${random.nextInt(10) + 1}',
+          isPinVerified: random.nextInt(2),
         ),
       );
     }

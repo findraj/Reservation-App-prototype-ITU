@@ -16,35 +16,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TextEditingController _washpinController = TextEditingController();
-
-  void _showPinDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        TextEditingController pinController = TextEditingController();
-        return AlertDialog(
-          title: const Text('Zadajte PIN z obrazovky'),
-          content: TextField(
-            controller: pinController,
-            keyboardType: TextInputType.number,
-            maxLength: 4,
-            decoration: const InputDecoration(hintText: 'Zadajte 4-miestny PIN'),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Overiť'),
-              onPressed: () {
-                //# Overenie pinu
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
+  final TextEditingController _nearestpinController = TextEditingController();
+  final TextEditingController _secondpinController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,33 +67,34 @@ class _HomeScreenState extends State<HomeScreen> {
                           String formattedTime = DateFormat('HH:mm').format(reservation.date); // Time formatting
 
                           bool isNearest = index == 0; // Najblizsia rezervacia ma index 0 po sorte
+                          bool isSecondNearest = index == 1; // Druha najblizsia rezervacia ma index 1 po sorte
                           return Card(
-                            elevation: isNearest ? 5 : 3,
+                            elevation: !(reservation.isPinVerified == 1) ? 5 : 3,
                             margin: const EdgeInsets.only(bottom: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
-                              title: Text("Machine: ${reservation.machine}"),
+                              title: Text("Machine: ${reservation.machine}", style: (reservation.isPinVerified == 1) ? TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 51, 213, 135)) : null),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 5),
-                                  Text("Location: ${reservation.location}"),
+                                  Text("Miesto: ${reservation.location}"),
                                   const SizedBox(height: 5),
                                   Text(
-                                    "Date: $formattedDate",
+                                    "Dátum: $formattedDate",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: isNearest && DateTime.now().isAfter(reservation.date) ? Colors.red : null, // If nearest reservation and time is past, then red
+                                      color: (isNearest || isSecondNearest) && !(reservation.isPinVerified == 1) && DateTime.now().isAfter(reservation.date) ? Colors.red : null, // If nearest reservation and time is past, then red
                                     ),
                                   ),
                                   const SizedBox(height: 5),
                                   Text(
-                                    "Time: $formattedTime",
+                                    "Čas: $formattedTime",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: isNearest && DateTime.now().isAfter(reservation.date) ? Colors.red : null,
+                                      color: (isNearest || isSecondNearest) && !(reservation.isPinVerified == 1) && DateTime.now().isAfter(reservation.date) ? Colors.red : null,
                                     ),
                                   ),
                                 ],
@@ -128,11 +103,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   // Pole na zadanie pinu sa objavi 5 minut pred rezervaciou a zmizne, ak je rezervacia viac ako 15 minut po
-                                  if (isNearest && (DateTime.now().isAfter(reservation.date.subtract(const Duration(minutes: 5))) && DateTime.now().isBefore(reservation.date.add(const Duration(minutes: 20)))))
+                                  if ((isNearest || isSecondNearest) && reservation.isPinVerified != 1 && (DateTime.now().isAfter(reservation.date.subtract(const Duration(minutes: 5))) && DateTime.now().isBefore(reservation.date.add(const Duration(minutes: 20)))))
                                     SizedBox(
                                       width: 75,
                                       child: TextField(
-                                          controller: _washpinController,
+                                          controller: isNearest ? _nearestpinController : _secondpinController,
                                           keyboardType: TextInputType.number,
                                           maxLength: 4,
                                           textAlign: TextAlign.center,
@@ -141,27 +116,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           onChanged: (String value) async {
                                             if (value.length == 4) {
-                                              bool pinOk = await reservationProvider.providerCheckPin(int.parse(value));
+                                              bool pinOk = await reservationProvider.providerCheckPin(int.parse(value), reservation);
                                               if (pinOk) {
+                                                setState(() {});
                                                 // pin v poriadku
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   const SnackBar(
+                                                    backgroundColor: Colors.greenAccent,
                                                     content: Text('Zadanie pinu úspešné!'),
                                                     duration: Duration(seconds: 2),
                                                   ),
                                                 );
+                                                isNearest ? _nearestpinController.clear() : _secondpinController.clear();
                                               } else {
                                                 // Ak je pin nespravny, tak sa zobrazi snackbar s chybovou hlaskou
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   const SnackBar(
+                                                    backgroundColor: Color.fromARGB(255, 255, 103, 103),
                                                     content: Text('Nesprávny PIN!'),
                                                     duration: Duration(seconds: 2),
                                                   ),
                                                 );
+                                                isNearest ? _nearestpinController.clear() : _secondpinController.clear();
                                               }
-                                              _washpinController.clear();
                                               // Overenie pinu
-                                              print("PIN: $value");
+                                              print("User input : PIN: $value");
                                             }
                                           }),
                                     ),
@@ -190,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'susicka', date: DateTime.now(), location: 'PPV');
+                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'susicka', date: DateTime.now(), location: 'PPV', isPinVerified: 0);
                       Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                     },
                     child: const Text('Nová rezervácia'),

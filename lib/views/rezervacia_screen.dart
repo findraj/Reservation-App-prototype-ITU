@@ -45,7 +45,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
               ],
             ),
             child: TableCalendar(
-              firstDay: DateTime.utc(2010, 10, 16),
+              // firstDay: DateTime.utc(2010, 10, 16),
+              firstDay: DateTime.now(),
               lastDay: DateTime.utc(2030, 3, 14),
               focusedDay: _focusedDay,
               calendarFormat: _calendarFormat,
