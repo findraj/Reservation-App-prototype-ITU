@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart'; // Import the audioplayers package
+import 'package:vyperto/view-model/profile_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:vyperto/assets/profile_info.dart';
+import 'package:vyperto/model/profile.dart';
 
 class CasovacScreen extends StatefulWidget {
   const CasovacScreen({super.key});
@@ -112,8 +116,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
                 final int minutes = int.tryParse(minutesController.text) ?? 0;
                 final int seconds = int.tryParse(secondsController.text) ?? 0;
                 setState(() {
-                  _duration = Duration(
-                      hours: hours, minutes: minutes, seconds: seconds);
+                  _duration = Duration(hours: hours, minutes: minutes, seconds: seconds);
                   _selectedPreset = '';
                 });
                 Navigator.of(context).pop();
@@ -148,9 +151,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
           color: isSelected ? Colors.blue[100] : Colors.grey[200],
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected
-                ? Colors.blue
-                : const Color.fromARGB(255, 194, 178, 178),
+            color: isSelected ? Colors.blue : const Color.fromARGB(255, 194, 178, 178),
             width: 1,
           ),
         ),
@@ -166,65 +167,27 @@ class _CasovacScreenState extends State<CasovacScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Ahoj, Marko!",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Zostatok : XXXX",
-                        style: TextStyle(
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    "Čas vysušiť ?",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ),
+              child: Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
+                Profile fetchedProfile = profileProvider.profile;
+                return ProfileHeader(profile: fetchedProfile);
+              }),
             ),
             const SizedBox(height: 40),
             InkWell(
               onTap: _setCustomTime,
               child: Text(
                 '${_duration.inHours.toString().padLeft(2, '0')}:${(_duration.inMinutes % 60).toString().padLeft(2, '0')}:${(_duration.inSeconds % 60).toString().padLeft(2, '0')}',
-                style: const TextStyle(
-                    fontSize: 60,
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline),
+                style: const TextStyle(fontSize: 60, color: Colors.blue, decoration: TextDecoration.underline),
               ),
             ),
             const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                    onPressed: _isRunning ? null : _startTimer,
-                    child: const Text('Start')),
-                ElevatedButton(
-                    onPressed: _stopTimer, child: const Text('Stop')),
-                ElevatedButton(
-                    onPressed: _resetTimer, child: const Text('Reset'))
-              ],
+              children: [ElevatedButton(onPressed: _isRunning ? null : _startTimer, child: const Text('Start')), ElevatedButton(onPressed: _stopTimer, child: const Text('Stop')), ElevatedButton(onPressed: _resetTimer, child: const Text('Reset'))],
             ),
             const SizedBox(height: 30),
             const Divider(),

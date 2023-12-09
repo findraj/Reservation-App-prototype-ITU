@@ -30,10 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
                 Profile fetchedProfile = profileProvider.profile;
-                return Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
-                  child: ProfileHeader(profile: fetchedProfile), // Now only ProfileHeader has padding
-                );
+                return ProfileHeader(profile: fetchedProfile);
               }),
               const SizedBox(height: 8),
               Expanded(
@@ -75,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
-                              title: Text("Machine: ${reservation.machine}", style: (reservation.isPinVerified == 1) ? TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 51, 213, 135)) : null),
+                              title: Text("${reservation.machine}", style: (reservation.isPinVerified == 1) ? TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 51, 213, 135)) : null),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -169,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'susicka', date: DateTime.now(), location: 'PPV', isPinVerified: 0);
+                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'Pranie', date: DateTime.now(), location: 'PPV', isPinVerified: 0);
                       Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                     },
                     child: const Text('Nová rezervácia'),

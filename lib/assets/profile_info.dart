@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/model/profile.dart';
 
 class ProfileHeader extends StatelessWidget {

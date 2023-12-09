@@ -41,7 +41,7 @@ class _Page_ControllerState extends State<Page_Controller> {
 
     // Since we are using Providers to handle databases, no need to pass databases to widgets.
     _tabs = [
-      HomeScreen(),
+      const HomeScreen(),
       const RezervaciaScreen(),
       const CasovacScreen(),
       const OdmenyScreen(),
