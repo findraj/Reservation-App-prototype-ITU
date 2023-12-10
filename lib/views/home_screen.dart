@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _nearestpinController = TextEditingController();
   final TextEditingController _secondpinController = TextEditingController();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
+                profileProvider.fetchProfile(profileProvider.profile); // Nacitanie profilu z databazy
                 Profile fetchedProfile = profileProvider.profile;
                 return ProfileHeader(profile: fetchedProfile);
               }),
@@ -148,14 +149,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     constraints: const BoxConstraints(),
                                     icon: const Icon(Icons.delete, color: Colors.red),
                                     onPressed: () async {
-                                      reservationProvider.providerDeleteReservation(reservation.id);
+                                      reservationProvider.providerDeleteReservation(reservation);
                                     },
                                   ),
                                 ],
                               ),
                             ),
                           );
-                        },
+                        }, // else
                       );
                     }
                   },
@@ -166,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'Pranie', date: DateTime.now(), location: 'PPV', isPinVerified: 0);
+                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'Pranie', date: DateTime.now(), location: 'PPV', isPinVerified: 0, isExpired: 0);
                       Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                     },
                     child: const Text('Nová rezervácia'),

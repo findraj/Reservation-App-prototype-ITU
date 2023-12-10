@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:vyperto/assets/colors.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:provider/provider.dart';
@@ -11,10 +10,8 @@ import 'rezervacia_screen.dart';
 import 'odmeny_screen.dart';
 
 class Page_Controller extends StatefulWidget {
-  final Database reservationDatabase;
-  final Database profileDatabase;
 
-  Page_Controller(this.reservationDatabase, this.profileDatabase);
+  Page_Controller({Key? key}) : super(key: key);
 
   @override
   _Page_ControllerState createState() => _Page_ControllerState();
@@ -53,7 +50,7 @@ class _Page_ControllerState extends State<Page_Controller> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProfileProvider>().fetchProfile(1);
+      context.read<ProfileProvider>().fetchProfile(ProfileProvider().profile);
     });
   }
 

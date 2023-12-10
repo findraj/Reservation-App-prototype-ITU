@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart'; // Import image_picker package
+import 'package:provider/provider.dart';
 import 'package:vyperto/assets/colors.dart';
 import 'package:vyperto/model/reservation.dart';
+import 'package:vyperto/model/profile.dart';
 import 'dart:math';
+
+import 'package:vyperto/view-model/profile_provider.dart';
 
 class ProfileRoute extends StatefulWidget {
   const ProfileRoute({super.key});
@@ -20,13 +23,14 @@ class _ProfileRouteState extends State<ProfileRoute> {
   // State variables for user information
   String userName = 'Marko';
   String userSurname = 'Olesak';
-  String userProfilePicUrl = 'https://avatar.cdnpk.net/23.jpg'; // Replace with actual URL
+  String userNameFull = 'example';
+  String userEmail = 'example@example.com';
 
   // Function to edit user profile
   Future<void> _editProfile() async {
-    final ImagePicker _picker = ImagePicker();
     TextEditingController _nameController = TextEditingController(text: userName);
     TextEditingController _surnameController = TextEditingController(text: userSurname);
+    TextEditingController _emailController = TextEditingController(text: userEmail);
 
     showDialog(
       context: context,
@@ -44,16 +48,9 @@ class _ProfileRouteState extends State<ProfileRoute> {
                 controller: _surnameController,
                 decoration: InputDecoration(labelText: 'Surname'),
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                  if (image != null) {
-                    setState(() {
-                      userProfilePicUrl = image.path; // Update the profile picture URL
-                    });
-                  }
-                },
-                child: Text('Change Profile Picture'),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'e-mail'),
               ),
             ],
           ),
@@ -67,7 +64,20 @@ class _ProfileRouteState extends State<ProfileRoute> {
                 setState(() {
                   userName = _nameController.text;
                   userSurname = _surnameController.text;
+                  userNameFull = userName + userSurname;
                 });
+                Profile newProfile = Profile(
+                  // TODO: Prenechat zostatok, body a miesto z povodneho profilu!! Ten sa zatial neziskava
+                  meno: userName,
+                  priezvisko: userSurname,
+                  email: userEmail,
+                  zostatok: 10,
+                  body: 10,
+                  miesto: 'PPV',
+                  darkMode: 0,
+                );
+                Provider.of<ProfileProvider>(context, listen: false).providerInsertProfile(newProfile);
+
                 Navigator.pop(context);
               },
               child: Text('Save Changes'),
@@ -89,6 +99,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
           location: locations[random.nextInt(locations.length)],
           machine: 'Machine ${random.nextInt(10) + 1}',
           isPinVerified: random.nextInt(2),
+          isExpired: random.nextInt(2),
         ),
       );
     }
@@ -118,12 +129,18 @@ class _ProfileRouteState extends State<ProfileRoute> {
           // User information with profile picture and edit option
           Row(
             children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(userProfilePicUrl),
-                radius: 30,
+              Consumer<ProfileProvider>(
+                builder: (context, profileProvider, child) {
+                  profileProvider.fetchProfile(profileProvider.profile);
+                  Profile fetchedProfile = profileProvider.profile;
+
+                  // Use null-aware operator to handle null values
+                  String displayName = "${fetchedProfile.meno ?? ''} ${fetchedProfile.priezvisko ?? ''}";
+
+                  return Text(displayName);
+                },
               ),
               const SizedBox(width: 10),
-              Text('$userName $userSurname'),
               Spacer(),
               IconButton(
                 onPressed: _editProfile,
@@ -148,32 +165,6 @@ class _ProfileRouteState extends State<ProfileRoute> {
                 child: Text(value),
               );
             }).toList(),
-          ),
-
-          const SizedBox(height: 24),
-
-          // TextField for 4-digit code
-          TextField(
-            controller: _codeController,
-            decoration: InputDecoration(
-              labelText: '4-miestny kód',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(4),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          // Button at the bottom
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Go back!'),
           ),
 
           const SizedBox(height: 24),
