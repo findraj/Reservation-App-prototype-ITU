@@ -167,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'Pranie', date: DateTime.now(), location: 'PPV', isPinVerified: 0, isExpired: 0);
+                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'Pranie', date: DateTime.now(), location: Provider.of<ProfileProvider>(context, listen: false).profile.miesto, isPinVerified: 0, isExpired: 0);
                       Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                     },
                     child: const Text('Nová rezervácia'),

@@ -7,6 +7,7 @@ import 'package:vyperto/model/profile.dart';
 import 'dart:math';
 
 import 'package:vyperto/view-model/profile_provider.dart';
+import 'package:vyperto/view-model/reservation_provider.dart';
 
 class ProfileRoute extends StatefulWidget {
   const ProfileRoute({super.key});
@@ -66,15 +67,15 @@ class _ProfileRouteState extends State<ProfileRoute> {
                   userSurname = _surnameController.text;
                   userNameFull = userName + userSurname;
                 });
+                Profile previousProfile = Provider.of<ProfileProvider>(context, listen: false).profile;
                 Profile newProfile = Profile(
-                  // TODO: Prenechat zostatok, body a miesto z povodneho profilu!! Ten sa zatial neziskava
                   meno: userName,
                   priezvisko: userSurname,
                   email: userEmail,
-                  zostatok: 10,
-                  body: 10,
-                  miesto: 'PPV',
-                  darkMode: 0,
+                  zostatok: previousProfile.zostatok,
+                  body: previousProfile.body,
+                  miesto: previousProfile.miesto,
+                  darkMode: previousProfile.darkMode,
                 );
                 Provider.of<ProfileProvider>(context, listen: false).providerInsertProfile(newProfile);
 
@@ -108,7 +109,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
 
   @override
   Widget build(BuildContext context) {
-    List<Reservation> historyReservations = _generateMockReservations();
+    List<Reservation> historyReservations = Provider.of<ReservationProvider>(context, listen: true).reservationsList;
 
     return Scaffold(
       appBar: AppBar(
@@ -153,11 +154,22 @@ class _ProfileRouteState extends State<ProfileRoute> {
 
           // Dropdown for selecting laundry location
           DropdownButton<String>(
-            value: _selectedLocation,
+            value: Provider.of<ProfileProvider>(context, listen: true).profile.miesto,
             onChanged: (String? newValue) {
               setState(() {
                 _selectedLocation = newValue!;
               });
+              Profile previousProfile = Provider.of<ProfileProvider>(context, listen: false).profile;
+              Profile newProfile = Profile(
+                meno: previousProfile.meno,
+                priezvisko: previousProfile.priezvisko,
+                email: previousProfile.email,
+                zostatok: previousProfile.zostatok,
+                body: previousProfile.body,
+                miesto: newValue!,
+                darkMode: previousProfile.darkMode,
+              );
+              Provider.of<ProfileProvider>(context, listen: false).providerInsertProfile(newProfile);
             },
             items: locations.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
