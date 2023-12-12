@@ -35,7 +35,11 @@ class _Page_ControllerState extends State<Page_Controller> {
     setState(() {
       _currentIndex = 1; // Assuming RezervaciaScreen is at index 1
     });
-    _pageController.jumpToPage(1);
+    _pageController.animateToPage(
+      1,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
   }
 
   @override

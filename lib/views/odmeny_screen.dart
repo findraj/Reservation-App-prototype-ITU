@@ -82,6 +82,12 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                                       // TODO: Uplatnenie kupónu
                                     },
                                   ),
+                                if (fetchedProfile.body < 10)
+                                  const Icon(
+                                    size : 32,
+                                    Icons.lock,
+                                    color: Colors.grey,
+                                  )
                               ],
                             ),
                           ),

@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Text("Neboli nájdené žiadne rezervácie.."),
+                              const Text("Aktuálne nemáš žiadne rezervácie.."),
                               const SizedBox(height: 10),
                               const Text("😢", style: TextStyle(fontSize: 24)),
                               const SizedBox(height: 10),
@@ -63,8 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                                       widget.onNavigateToRezervacia();
                                     },
+                                    style: ButtonStyle(
+                                      elevation: MaterialStateProperty.all(6.0), // Adjust the elevation value as needed
+                                    ),
                                     child: const Text('Vytvor si novú rezerváciu!'),
-                                  ),
+                                  )
                                 ],
                               )
                             ],
