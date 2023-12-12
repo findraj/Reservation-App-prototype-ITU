@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         id: DateTime.now().millisecondsSinceEpoch,
                         machine: 'Pranie',
                         date: DateTime.now(),
-                        location: 'PPV',
+                        location: Provider.of<ProfileProvider>(context, listen: true).profile.miesto,
                         isPinVerified: 0,
                         isExpired: 0);
                     Provider.of<ReservationProvider>(context, listen: false)
