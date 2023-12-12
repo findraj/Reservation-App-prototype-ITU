@@ -17,21 +17,75 @@ class ProfileRoute extends StatefulWidget {
 }
 
 class _ProfileRouteState extends State<ProfileRoute> {
-  String _selectedLocation = 'PPV'; // Default value for selected location
-  List<String> locations = ['PPV', 'Purkyne']; // Available locations
+  String _selectedLocation = 'Koleje pod Palackého vrchem'; // Default value for selected location
+  List<String> locations = ['Koleje pod Palackého vrchem', 'Purkyňove koleje']; // Available locations
   TextEditingController _codeController = TextEditingController(); // Controller for code input
 
   // State variables for user information
-  String userName = 'Marko';
-  String userSurname = 'Olesak';
+  String userName = 'example';
+  String userSurname = 'example';
   String userNameFull = 'example';
   String userEmail = 'example@example.com';
+  int chargedMoney = 0;
+
+  // Function to change balance
+  Future<void> _changeBalance() async {
+    TextEditingController _balanceController = TextEditingController();
+
+    showDialog(context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Dobyť peniaze'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _balanceController,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                decoration: const InputDecoration(
+                  hintText: 'Suma'),
+              ),
+            ]
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Zrušiť'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  chargedMoney = int.parse(_balanceController.text);
+                });
+                if (chargedMoney > 0){
+                  Provider.of<ProfileProvider>(context, listen: false).updateProfileBalance(Provider.of<ProfileProvider>(context, listen: false).profile, chargedMoney);
+                }
+                else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Color.fromARGB(255, 255, 103, 103),
+                      content: Text('Suma musí byť väčšia ako 0'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+
+                Navigator.pop(context);
+              },
+              child: Text('Uložiť'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   // Function to edit user profile
   Future<void> _editProfile() async {
-    TextEditingController _nameController = TextEditingController(text: userName);
-    TextEditingController _surnameController = TextEditingController(text: userSurname);
-    TextEditingController _emailController = TextEditingController(text: userEmail);
+    TextEditingController _nameController = TextEditingController(text: Provider.of<ProfileProvider>(context, listen: false).profile.meno);
+    TextEditingController _surnameController = TextEditingController(text: Provider.of<ProfileProvider>(context, listen: false).profile.priezvisko);
+    TextEditingController _emailController = TextEditingController(text: Provider.of<ProfileProvider>(context, listen: false).profile.email);
 
     showDialog(
       context: context,
@@ -65,7 +119,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
                 setState(() {
                   userName = _nameController.text;
                   userSurname = _surnameController.text;
-                  userNameFull = userName + userSurname;
+                  userEmail = _emailController.text;
                 });
                 Profile previousProfile = Provider.of<ProfileProvider>(context, listen: false).profile;
                 Profile newProfile = Profile(
@@ -177,6 +231,14 @@ class _ProfileRouteState extends State<ProfileRoute> {
                 child: Text(value),
               );
             }).toList(),
+          ),
+
+          const SizedBox(height: 24),
+
+          TextButton(
+            style: TextButton.styleFrom(backgroundColor: Color.fromARGB(255, 223, 223, 223)),
+            onPressed: _changeBalance,
+            child: Text('Dobyť peniaze'),
           ),
 
           const SizedBox(height: 24),

@@ -35,7 +35,7 @@ Future<void> initializeUser() async {
       email: 'janko@example.com',
       zostatok: 1000,
       body: 10,
-      miesto: 'PPV',
+      miesto: 'Koleje pod Palackého vrchem',
       darkMode: 0,
     );
 
