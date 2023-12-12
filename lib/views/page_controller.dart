@@ -10,7 +10,6 @@ import 'rezervacia_screen.dart';
 import 'odmeny_screen.dart';
 
 class Page_Controller extends StatefulWidget {
-
   Page_Controller({Key? key}) : super(key: key);
 
   @override
@@ -18,17 +17,7 @@ class Page_Controller extends StatefulWidget {
 }
 
 class _Page_ControllerState extends State<Page_Controller> {
-  int _currentIndex = 0; // Index of the currently selected tab
-
-  List<Widget> _tabs = [];
-
-  final List<String> _tabTitles = [
-    'Domov',
-    'Rezervácia',
-    'Časovač',
-    'Odmeny',
-  ];
-
+  int _currentIndex = 0;
   late PageController _pageController;
 
   @override
@@ -36,29 +25,21 @@ class _Page_ControllerState extends State<Page_Controller> {
     super.initState();
     _pageController = PageController(initialPage: _currentIndex);
 
-    // Since we are using Providers to handle databases, no need to pass databases to widgets.
-    _tabs = [
-      const HomeScreen(),
-      const RezervaciaScreen(),
-      const CasovacScreen(),
-      const OdmenyScreen(),
-    ];
-
-    // Since ReservationProvider is initialized at the start, we fetch reservations here
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ReservationProvider>().fetchReservations();
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProfileProvider>().fetchProfile(ProfileProvider().profile);
     });
   }
 
+  void navigateToRezervaciaScreen() {
+    setState(() {
+      _currentIndex = 1; // Assuming RezervaciaScreen is at index 1
+    });
+    _pageController.jumpToPage(1);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Use Provider.of or context.watch to get the Database instance if needed
-    // Example: Database db = Provider.of<ReservationProvider>(context).database;
-
     return Scaffold(
       backgroundColor: primaryColor,
       appBar: AppBar(
@@ -100,7 +81,12 @@ class _Page_ControllerState extends State<Page_Controller> {
           });
         },
         controller: _pageController,
-        children: _tabs,
+        children: [
+          HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
+          const RezervaciaScreen(),
+          const CasovacScreen(),
+          const OdmenyScreen(),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: boxDecoration,
@@ -151,6 +137,8 @@ class _Page_ControllerState extends State<Page_Controller> {
       ),
     );
   }
+
+  final List<String> _tabTitles = ['Domov', 'Rezervácia', 'Časovač', 'Odmeny'];
 }
 
 const BoxDecoration boxDecoration = BoxDecoration(
