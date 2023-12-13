@@ -8,19 +8,21 @@ import 'package:vyperto/assets/profile_info.dart';
 class OdmenyScreen extends StatefulWidget {
   final VoidCallback onNavigateToRezervacia;
 
-  const OdmenyScreen({Key? key, required this.onNavigateToRezervacia})
-      : super(key: key);
+  const OdmenyScreen({Key? key, required this.onNavigateToRezervacia}) : super(key: key);
 
   @override
   _OdmenyScreenState createState() => _OdmenyScreenState();
 }
 
+// define constant for costs
+const int COST_WASHING = 10;
+const int COST_WASHING_DRYING = 15;
+
 class _OdmenyScreenState extends State<OdmenyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          primaryColor, // Assuming you have defined primaryColor in 'colors.dart'
+      backgroundColor: primaryColor, // Assuming you have defined primaryColor in 'colors.dart'
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,25 +34,17 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10, left: 10, right: 10, bottom: 0),
-                    child: ProfileHeader(
-                        profile:
-                            fetchedProfile), // Now only ProfileHeader has padding
+                    padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
+                    child: ProfileHeader(profile: fetchedProfile), // Now only ProfileHeader has padding
                   ),
                   Container(
-                    padding: const EdgeInsets.only(
-                        top: 0,
-                        left: 10,
-                        right: 10,
-                        bottom: 0), // Added padding for alignment
+                    padding: const EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 0), // Added padding for alignment
 
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.only(
-                              top: 16.0), // Added padding for alignment
+                          padding: EdgeInsets.only(top: 16.0), // Added padding for alignment
                           child: Text(
                             'Kupóny',
                             style: TextStyle(
@@ -61,7 +55,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                         ),
                         const SizedBox(height: 8),
                         Card(
-                          elevation: fetchedProfile.body >= 10 ? 8 : 3,
+                          elevation: fetchedProfile.body >= COST_WASHING ? 8 : 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -71,39 +65,36 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 5),
-                                fetchedProfile.body < 10
-                                    ? Text(
-                                        "Dostupné od 10 bodov, máš: ${fetchedProfile.body}")
-                                    : const Text("Hurá!"),
+                                fetchedProfile.body < COST_WASHING ? Text("Dostupné od ${COST_WASHING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá!"),
                                 const SizedBox(height: 5),
                               ],
                             ),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize
-                                  .min, // Ensures the row only takes up needed space
+                              mainAxisSize: MainAxisSize.min, // Ensures the row only takes up needed space
                               children: [
-                                if (fetchedProfile.body >= 10)
+                                if (fetchedProfile.body >= COST_WASHING)
                                   ElevatedButton(
                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all<
-                                              Color>(
-                                          selectedItemColor), // Use an appropriate Color object here
-                                      padding:
-                                          MaterialStateProperty.all<EdgeInsets>(
-                                        const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 8),
+                                      backgroundColor: MaterialStateProperty.all<Color>(selectedItemColor), // Use an appropriate Color object here
+                                      padding: MaterialStateProperty.all<EdgeInsets>(
+                                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                       ),
                                     ),
                                     child: const Text(
                                       'Použiť',
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.white),
+                                      style: TextStyle(fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Rezervácia bude zaplatená z vernostných bodov!'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
                                       widget.onNavigateToRezervacia();
                                     },
                                   ),
-                                if (fetchedProfile.body < 10)
+                                if (fetchedProfile.body < COST_WASHING)
                                   const Icon(
                                     size: 32,
                                     Icons.lock,
@@ -114,48 +105,72 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                           ),
                         ),
                         Card(
-                          elevation: fetchedProfile.body >= 7 ? 8 : 3,
+                          elevation: fetchedProfile.body >= COST_WASHING_DRYING ? 8 : 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: ListTile(
-                            title: const Text("Sušenie zadarmo!"),
+                            title: const Text("Pranie a sušenie zadarmo!"),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 5),
-                                fetchedProfile.body < 7
-                                    ? Text(
-                                        "Dostupné od 7 bodov, máš: ${fetchedProfile.body}")
-                                    : const Text("Hurá!"),
+                                fetchedProfile.body < COST_WASHING_DRYING ? Text("Dostupné od ${COST_WASHING_DRYING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá!"),
                                 const SizedBox(height: 5),
                               ],
                             ),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize
-                                  .min, // Ensures the row only takes up needed space
+                              mainAxisSize: MainAxisSize.min, // Ensures the row only takes up needed space
                               children: [
-                                if (fetchedProfile.body >= 7)
+                                if (fetchedProfile.body >= COST_WASHING_DRYING)
                                   ElevatedButton(
                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all<
-                                              Color>(
-                                          selectedItemColor), // Use an appropriate Color object here
-                                      padding:
-                                          MaterialStateProperty.all<EdgeInsets>(
-                                        const EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 8),
+                                      backgroundColor: MaterialStateProperty.all<Color>(selectedItemColor), // Use an appropriate Color object here
+                                      padding: MaterialStateProperty.all<EdgeInsets>(
+                                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                       ),
                                     ),
                                     child: const Text(
                                       'Použiť',
-                                      style: TextStyle(
-                                          fontSize: 12, color: Colors.white),
+                                      style: TextStyle(fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
                                       widget.onNavigateToRezervacia();
                                     },
                                   ),
+                                if (fetchedProfile.body < COST_WASHING_DRYING)
+                                  const Icon(
+                                    size: 32,
+                                    Icons.lock,
+                                    color: Colors.grey,
+                                  )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const ListTile(
+                            title: Text("Ďalšie odmeny už čoskoro!"),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 5),
+                                Text("Ale to je zatial tajné..."),
+                                SizedBox(height: 5),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min, // Ensures the row only takes up needed space
+                              children: [
+                                Icon(
+                                  size: 32,
+                                  Icons.lock,
+                                  color: Colors.grey,
+                                )
                               ],
                             ),
                           ),
