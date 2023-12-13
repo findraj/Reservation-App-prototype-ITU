@@ -34,26 +34,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     "17:00"
   ];
 
-  bool isTimeSlotReserved(DateTime? selectedDay, String timeSlot) {
-    if (selectedDay == null) return false;
-
-    final reservationProvider =
-        Provider.of<ReservationProvider>(context, listen: false);
-    List<Reservation> userReservations = reservationProvider.reservationsList;
-
-    DateTime slotDateTime = DateTime(
-      selectedDay.year,
-      selectedDay.month,
-      selectedDay.day,
-      int.parse(timeSlot.split(':')[0]),
-      int.parse(timeSlot.split(':')[1]),
-    );
-
-    return userReservations.any((reservation) {
-      return reservation.date.isAtSameMomentAs(slotDateTime);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,6 +132,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 final profile = profileProvider.profile;
 
                 String location = profile.miesto;
+
                 String machineType =
                     _wantsDryer ? "pracka a susicka" : "pracka";
                 int cost = _wantsDryer ? 17 : 10;
@@ -159,7 +140,11 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 if (profile.zostatok < cost) {
                   // If the user doesn't have enough balance, show a notification and exit
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Nedostatok kreditov na účte')),
+                    const SnackBar(
+                      backgroundColor: Colors.redAccent,
+                      content: Text('Nedostatok zostatku na účte!'),
+                      duration: Duration(seconds: 2),
+                    ),
                   );
                   return;
                 }
@@ -184,7 +169,11 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
 
                   // Show success notification
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Rezervacia uspesne ulozena')),
+                    const SnackBar(
+                      backgroundColor: Colors.greenAccent,
+                      content: Text('Rezervácia úspešne uložená!'),
+                      duration: Duration(seconds: 2),
+                    ),
                   );
 
                   // Debug information
@@ -224,18 +213,18 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (isReserved) {
-              return Colors.red; // Color for reserved slots
-            } else if (_selectedTime == time) {
-              return Theme.of(context).primaryColor; // Highlight selected slot
+            if (states.contains(MaterialState.pressed) ||
+                (_selectedTime == time)) {
+              return Theme.of(context).primaryColor;
             }
             return Colors.grey[300]!; // Default for available slots
           },
         ),
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (isReserved || (_selectedTime == time)) {
-              return Colors.white; // Text color for selected or reserved slots
+            if (states.contains(MaterialState.pressed) ||
+                (_selectedTime == time)) {
+              return Colors.white;
             }
             return Colors.black; // Text color for available slots
           },

@@ -59,14 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      var newReserv = Reservation(
-                                        machine: 'Pranie',
-                                        date: DateTime.now(),
-                                        location: 'PPV',
-                                        isPinVerified: 0,
-                                        isExpired: 0,
-                                      );
-                                      Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                                       widget.onNavigateToRezervacia();
                                     },
                                     style: ButtonStyle(
@@ -88,6 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Reservation reservation = reservationsList[index];
                           String formattedDate = DateFormat('yyyy-MM-dd').format(reservation.date); // Date formatting
                           String formattedTime = DateFormat('HH:mm').format(reservation.date); // Time formatting
+
+                          if (reservation.machine == "Pranie a sušenie") {
+                            formattedTime = DateFormat('HH:mm').format(reservation.date) + " - " + DateFormat('HH:mm').format(reservation.date.add(const Duration(hours: 2)));
+                          } else {
+                            formattedTime = DateFormat('HH:mm').format(reservation.date) + " - " + DateFormat('HH:mm').format(reservation.date.add(const Duration(hours: 1)));
+                          }
 
                           bool isNearest = index == 0; // Najblizsia rezervacia ma index 0 po sorte
                           bool isSecondNearest = index == 1; // Druha najblizsia rezervacia ma index 1 po sorte
