@@ -123,9 +123,9 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
 
                 String location = profile.miesto;
 
-                int cost = _wantsDryer
-                    ? 17
-                    : 10; // Cost is 17 if dryer is selected, otherwise 10
+                String machineType =
+                    _wantsDryer ? "pracka a susicka" : "pracka";
+                int cost = _wantsDryer ? 17 : 10;
 
                 if (profile.zostatok < cost) {
                   // If the user doesn't have enough balance, show a notification and exit
@@ -138,7 +138,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 // Create new reservation
                 Reservation newReservation = Reservation(
                   id: 0,
-                  machine: "pracka",
+                  machine: machineType,
                   date: dateTime,
                   location: location,
                   isPinVerified: 0,
