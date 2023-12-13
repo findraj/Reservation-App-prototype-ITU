@@ -34,6 +34,26 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     "17:00"
   ];
 
+  bool isTimeSlotReserved(DateTime? selectedDay, String timeSlot) {
+    if (selectedDay == null) return false;
+
+    final reservationProvider =
+        Provider.of<ReservationProvider>(context, listen: false);
+    List<Reservation> userReservations = reservationProvider.reservationsList;
+
+    DateTime slotDateTime = DateTime(
+      selectedDay.year,
+      selectedDay.month,
+      selectedDay.day,
+      int.parse(timeSlot.split(':')[0]),
+      int.parse(timeSlot.split(':')[1]),
+    );
+
+    return userReservations.any((reservation) {
+      return reservation.date.isAtSameMomentAs(slotDateTime);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,12 +137,21 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   int.parse(_selectedTime!.split(':')[1]),
                 );
 
+                // Check if the selected time slot is already reserved
+                if (isTimeSlotReserved(_selectedDay, _selectedTime!)) {
+                  // Added null check with '!'
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Tento časový slot je už rezervovaný')),
+                  );
+                  return;
+                }
+
                 final profileProvider =
                     Provider.of<ProfileProvider>(context, listen: false);
                 final profile = profileProvider.profile;
 
                 String location = profile.miesto;
-
                 String machineType =
                     _wantsDryer ? "pracka a susicka" : "pracka";
                 int cost = _wantsDryer ? 17 : 10;
@@ -181,30 +210,34 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   }
 
   ElevatedButton _buildTimeButton(String time) {
+    bool isReserved = isTimeSlotReserved(_selectedDay, time);
+
     return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _selectedTime = time;
-        });
-      },
+      onPressed: isReserved
+          ? null
+          : () {
+              setState(() {
+                _selectedTime = time;
+              });
+            },
       child: Text(time),
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (states.contains(MaterialState.pressed) ||
-                (_selectedTime == time)) {
-              return Theme.of(context).primaryColor;
+            if (isReserved) {
+              return Colors.red; // Color for reserved slots
+            } else if (_selectedTime == time) {
+              return Theme.of(context).primaryColor; // Highlight selected slot
             }
-            return Colors.grey[300]!;
+            return Colors.grey[300]!; // Default for available slots
           },
         ),
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (states.contains(MaterialState.pressed) ||
-                (_selectedTime == time)) {
-              return Colors.white;
+            if (isReserved || (_selectedTime == time)) {
+              return Colors.white; // Text color for selected or reserved slots
             }
-            return Colors.black;
+            return Colors.black; // Text color for available slots
           },
         ),
       ),
