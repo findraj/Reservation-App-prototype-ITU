@@ -33,7 +33,7 @@ class _Page_ControllerState extends State<Page_Controller> {
 
   void navigateToRezervaciaScreen() {
     setState(() {
-      _currentIndex = 1; // Assuming RezervaciaScreen is at index 1
+      _currentIndex = 1;
     });
     _pageController.animateToPage(
       1,
@@ -101,7 +101,7 @@ class _Page_ControllerState extends State<Page_Controller> {
           HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
           const RezervaciaScreen(),
           const CasovacScreen(),
-          OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
+          const OdmenyScreen(),
         ],
       ),
       bottomNavigationBar: Container(
