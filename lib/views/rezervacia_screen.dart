@@ -121,28 +121,54 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                     Provider.of<ProfileProvider>(context, listen: false);
                 final profile = profileProvider.profile;
 
-                int cena = _wantsDryer ? 20 : 10;
+                String location = profile.miesto;
 
-                void spracujPlatbu() {
-                  if (profile.body >= cena) {
-                    // Použiť bonusové body na zaplatenie
-                    profileProvider.updateProfilePoints(profile, -cena);
-                  } else if (profile.zostatok >= cena) {
-                    // Použiť zostatok na zaplatenie
-                    profileProvider.updateProfileBalance(profile, -cena);
-                  } else {
-                    // Zobraziť notifikáciu o nedostatku kreditov
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Nedostatok kreditov'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
+                int cost = _wantsDryer
+                    ? 17
+                    : 10; // Cost is 17 if dryer is selected, otherwise 10
+
+                if (profile.zostatok < cost) {
+                  // If the user doesn't have enough balance, show a notification and exit
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Nedostatok kreditov na účte')),
+                  );
+                  return;
                 }
 
-                spracujPlatbu();
+                // Create new reservation
+                Reservation newReservation = Reservation(
+                  id: 0,
+                  machine: "pracka",
+                  date: dateTime,
+                  location: location,
+                  isPinVerified: 0,
+                  isExpired: 0,
+                );
+
+                // Save the reservation and update the profile balance
+                final reservationProvider =
+                    Provider.of<ReservationProvider>(context, listen: false);
+                reservationProvider
+                    .providerInsertReservation(newReservation)
+                    .then((_) {
+                  // Update user's balance
+                  profileProvider.updateProfileBalance(profile, -cost);
+
+                  // Show success notification
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Rezervacia uspesne ulozena')),
+                  );
+
+                  // Debug information
+                  print(
+                      'Rezervacia ulozena: Datum: ${_selectedDay.toString()}, Cas: $_selectedTime');
+                }).catchError((error) {
+                  // Handle errors during reservation saving
+                  print('Chyba pri ukladani rezervacie: $error');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Chyba pri ukladani rezervacie')),
+                  );
+                });
               } else {
                 print('Vyberte prosim datum a cas');
               }

@@ -82,7 +82,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                                   .min, // Ensures the row only takes up needed space
                               children: [
                                 if (fetchedProfile.body >= 10)
-                                  TextButton(
+                                  ElevatedButton(
                                     style: ButtonStyle(
                                       backgroundColor: MaterialStateProperty.all<
                                               Color>(
@@ -135,7 +135,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                                   .min, // Ensures the row only takes up needed space
                               children: [
                                 if (fetchedProfile.body >= 7)
-                                  TextButton(
+                                  ElevatedButton(
                                     style: ButtonStyle(
                                       backgroundColor: MaterialStateProperty.all<
                                               Color>(
