@@ -40,6 +40,18 @@ class _Page_ControllerState extends State<Page_Controller> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
+    // Priprava prechodu z odmien do rezervacie
+    // if (_currentIndex == 3) {
+    //   RezervaciaScreen rezervaciaScreen;
+    //   rezervaciaScreen.receiveParameters(
+    //     points: true,
+    //   );
+    // } else {
+    //   RezervaciaScreen rezervaciaScreen;
+    //   rezervaciaScreen.receiveParameters(
+    //     points: false,
+    //   );
+    // }
   }
 
   @override
@@ -89,7 +101,7 @@ class _Page_ControllerState extends State<Page_Controller> {
           HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
           const RezervaciaScreen(),
           const CasovacScreen(),
-          const OdmenyScreen(),
+          OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
         ],
       ),
       bottomNavigationBar: Container(

@@ -62,6 +62,7 @@ class ReservationAPI {
   }
 
   Future<bool> checkPin(int pin, Reservation reservation) async {
+    print(reservation.toString());
     DateTime now = DateTime.now();
     String day = now.day.toString().padLeft(2, '0'); // DD
     String month = now.month.toString().padLeft(2, '0'); // MM

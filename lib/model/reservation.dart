@@ -1,5 +1,5 @@
 class Reservation {
-  final int id;
+  int? id;
   final String machine;
   final DateTime date;
   final String location;
@@ -7,7 +7,7 @@ class Reservation {
   int isExpired = 0;
 
   Reservation({
-    required this.id,
+    this.id,
     required this.machine,
     required this.date,
     required this.location,
@@ -16,7 +16,13 @@ class Reservation {
   });
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'machine': machine, 'date': date.millisecondsSinceEpoch, 'location': location, 'isPinVerified': isPinVerified, 'isExpired': isExpired};
+    return {
+      'machine': machine,
+      'date': date.millisecondsSinceEpoch,
+      'location': location,
+      'isPinVerified': isPinVerified,
+      'isExpired': isExpired,
+    };
   }
 
   @override

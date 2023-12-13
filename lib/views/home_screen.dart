@@ -59,7 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      var newReserv = Reservation(id: DateTime.now().millisecondsSinceEpoch, machine: 'Pranie', date: DateTime.now(), location: 'PPV', isPinVerified: 0, isExpired: 0);
+                                      var newReserv = Reservation(
+                                        machine: 'Pranie',
+                                        date: DateTime.now(),
+                                        location: 'PPV',
+                                        isPinVerified: 0,
+                                        isExpired: 0,
+                                      );
                                       Provider.of<ReservationProvider>(context, listen: false).providerInsertReservation(newReserv);
                                       widget.onNavigateToRezervacia();
                                     },

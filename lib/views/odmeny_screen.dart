@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:vyperto/assets/profile_info.dart';
 
 class OdmenyScreen extends StatefulWidget {
-  const OdmenyScreen({super.key});
+  final VoidCallback onNavigateToRezervacia;
+
+  const OdmenyScreen({Key? key, required this.onNavigateToRezervacia}) : super(key: key);
 
   @override
   _OdmenyScreenState createState() => _OdmenyScreenState();
@@ -79,12 +81,12 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                                       style: TextStyle(fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
-                                      // TODO: Uplatnenie kupónu
+                                      widget.onNavigateToRezervacia();
                                     },
                                   ),
                                 if (fetchedProfile.body < 10)
                                   const Icon(
-                                    size : 32,
+                                    size: 32,
                                     Icons.lock,
                                     color: Colors.grey,
                                   )
@@ -123,7 +125,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                                       style: TextStyle(fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
-                                      // TODO: Uploatenie kupónu
+                                      widget.onNavigateToRezervacia();
                                     },
                                   ),
                               ],
