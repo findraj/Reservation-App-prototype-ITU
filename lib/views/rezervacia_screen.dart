@@ -137,7 +137,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
 
                 // Create new reservation
                 Reservation newReservation = Reservation(
-                  id: 0,
                   machine: machineType,
                   date: dateTime,
                   location: location,
