@@ -9,7 +9,14 @@ class ProfileProvider extends ChangeNotifier {
 
   ProfileProvider() {
     _profileApi = ProfileAPI();
-    _profile = Profile(meno: "", priezvisko: "", email: "", zostatok: 0, body: 0, miesto: "", darkMode: 0);
+    _profile = Profile(
+        meno: "",
+        priezvisko: "",
+        email: "",
+        zostatok: 0,
+        body: 0,
+        miesto: "",
+        darkMode: 0);
     fetchProfile(_profile);
   }
 
@@ -37,6 +44,17 @@ class ProfileProvider extends ChangeNotifier {
   Future<void> updateProfileBalance(Profile profile, int amount) async {
     try {
       _profile.zostatok += amount;
+      await _profileApi.manipulateBalance(profile, amount);
+      notifyListeners();
+    } catch (e) {
+      print('Error updating balance: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateProfilePoints(Profile profile, int amount) async {
+    try {
+      _profile.body += amount;
       await _profileApi.manipulateBalance(profile, amount);
       notifyListeners();
     } catch (e) {
