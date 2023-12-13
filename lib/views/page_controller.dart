@@ -101,7 +101,7 @@ class _Page_ControllerState extends State<Page_Controller> {
           HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
           const RezervaciaScreen(),
           const CasovacScreen(),
-          const OdmenyScreen(),
+          OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen)
         ],
       ),
       bottomNavigationBar: Container(

@@ -6,7 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:vyperto/assets/profile_info.dart';
 
 class OdmenyScreen extends StatefulWidget {
-  const OdmenyScreen({super.key});
+  final VoidCallback onNavigateToRezervacia;
+
+  const OdmenyScreen({Key? key, required this.onNavigateToRezervacia})
+      : super(key: key);
 
   @override
   _OdmenyScreenState createState() => _OdmenyScreenState();
