@@ -9,8 +9,8 @@ class ReservationAPI {
       join(await getDatabasesPath(), 'reservation.db'),
       onCreate: (db, version) async {
         await db.execute(
-          // 'DROP TABLE IF EXISTS reservations',
-          'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT, isPinVerified BOOLEAN DEFAULT 0, isExpired BOOLEAN DEFAULT 0)',
+          'DROP TABLE IF EXISTS reservations',
+          //'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT, isPinVerified BOOLEAN DEFAULT 0, isExpired BOOLEAN DEFAULT 0)',
         );
       },
       version: 1,

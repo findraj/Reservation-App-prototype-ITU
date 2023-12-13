@@ -108,7 +108,9 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () {
+              // Skontrolujem, ci som vybral den a cas
               if (_selectedDay != null && _selectedTime != null) {
+                // Vytvorim objekt DateTime z vybraneho dna a casu
                 DateTime dateTime = DateTime(
                   _selectedDay!.year,
                   _selectedDay!.month,
@@ -117,40 +119,49 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   int.parse(_selectedTime!.split(':')[1]),
                 );
 
-                String machine = "pracka";
-                String location = "ppv";
+                // Ziskam profil pouzivatela z ProfileProvidera
+                final profileProvider =
+                    Provider.of<ProfileProvider>(context, listen: false);
+                final profile = profileProvider.profile;
 
+                // Pouzijem umiestnenie z profilu pre rezervaciu
+                String location = profile.miesto;
+
+                // Vytvorim novu rezervaciu
                 Reservation newReservation = Reservation(
                   id: 0,
-                  machine: machine,
+                  machine: "pracka",
                   date: dateTime,
                   location: location,
                   isPinVerified: 0,
                   isExpired: 0,
                 );
-
+                // Ulozim rezervaciu pomocou ReservationProvidera
                 final reservationProvider =
                     Provider.of<ReservationProvider>(context, listen: false);
                 reservationProvider
                     .providerInsertReservation(newReservation)
                     .then((_) {
+                  // Zobrazim notifikaciu o uspesnom ulozeni rezervacie
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Reservation saved successfully')),
+                    SnackBar(content: Text('Rezervacia uspesne ulozena')),
                   );
                 }).catchError((error) {
-                  print('Error saving reservation: $error');
+                  // Vypisem chybu pri ukladani rezervacie
+                  print('Chyba pri ukladani rezervacie: $error');
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error saving reservation')),
+                    SnackBar(content: Text('Chyba pri ukladani rezervacie')),
                   );
                 });
-
+                // Vypisem informacie o ulozenej rezervacii do konzoly pre ladenie
                 print(
-                    'Reservation saved: Date: ${_selectedDay.toString()}, Time: $_selectedTime, Dryer: $_wantsDryer');
+                    'Rezervacia ulozena: Datum: ${_selectedDay.toString()}, Cas: $_selectedTime');
               } else {
-                print('Please select a date and time');
+                // Vypisem upozornenie, ak nebol vybrany den alebo cas
+                print('Vyberte prosim datum a cas');
               }
             },
-            child: const Text('Potvrdiť'),
+            child: const Text('Potvrdit'),
           ),
           const SizedBox(height: 20.0),
         ],
