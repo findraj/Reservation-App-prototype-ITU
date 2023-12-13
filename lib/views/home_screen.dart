@@ -35,6 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Profile fetchedProfile = profileProvider.profile;
                 return ProfileHeader(profile: fetchedProfile);
               }),
+              const Padding(
+                padding: EdgeInsets.only(top: 16.0),
+                child: Text(
+                  'Aktuálne rezervácie',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               const SizedBox(height: 8),
               Expanded(
                 child: Consumer<ReservationProvider>(
