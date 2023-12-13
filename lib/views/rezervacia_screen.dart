@@ -23,16 +23,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   String? _selectedTime;
   bool _wantsDryer = false;
 
-  List<String> availableTimes = [
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00"
-  ];
+  List<String> availableTimes = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
   @override
   Widget build(BuildContext context) {
@@ -117,20 +108,22 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   int.parse(_selectedTime!.split(':')[1]),
                 );
 
-                final profileProvider =
-                    Provider.of<ProfileProvider>(context, listen: false);
+                final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
                 final profile = profileProvider.profile;
 
                 String location = profile.miesto;
 
-                String machineType =
-                    _wantsDryer ? "pracka a susicka" : "pracka";
+                String machineType = _wantsDryer ? "Pranie a sušenie" : "Pranie";
                 int cost = _wantsDryer ? 17 : 10;
 
                 if (profile.zostatok < cost) {
                   // If the user doesn't have enough balance, show a notification and exit
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Nedostatok kreditov na účte')),
+                    const SnackBar(
+                      backgroundColor: Colors.redAccent,
+                      content: Text('Nedostatok zostatku na účte!'),
+                      duration: Duration(seconds: 2),
+                    ),
                   );
                   return;
                 }
@@ -145,22 +138,22 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 );
 
                 // Save the reservation and update the profile balance
-                final reservationProvider =
-                    Provider.of<ReservationProvider>(context, listen: false);
-                reservationProvider
-                    .providerInsertReservation(newReservation)
-                    .then((_) {
+                final reservationProvider = Provider.of<ReservationProvider>(context, listen: false);
+                reservationProvider.providerInsertReservation(newReservation).then((_) {
                   // Update user's balance
                   profileProvider.updateProfileBalance(profile, -cost);
 
                   // Show success notification
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Rezervacia uspesne ulozena')),
+                    const SnackBar(
+                      backgroundColor: Colors.greenAccent,
+                      content: Text('Rezervácia úspešne uložená!'),
+                      duration: Duration(seconds: 2),
+                    ),
                   );
 
                   // Debug information
-                  print(
-                      'Rezervacia ulozena: Datum: ${_selectedDay.toString()}, Cas: $_selectedTime');
+                  print('Rezervacia ulozena: Datum: ${_selectedDay.toString()}, Cas: $_selectedTime');
                 }).catchError((error) {
                   // Handle errors during reservation saving
                   print('Chyba pri ukladani rezervacie: $error');
@@ -191,8 +184,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (states.contains(MaterialState.pressed) ||
-                (_selectedTime == time)) {
+            if (states.contains(MaterialState.pressed) || (_selectedTime == time)) {
               return Theme.of(context).primaryColor;
             }
             return Colors.grey[300]!;
@@ -200,8 +192,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
         ),
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (states.contains(MaterialState.pressed) ||
-                (_selectedTime == time)) {
+            if (states.contains(MaterialState.pressed) || (_selectedTime == time)) {
               return Colors.white;
             }
             return Colors.black;
