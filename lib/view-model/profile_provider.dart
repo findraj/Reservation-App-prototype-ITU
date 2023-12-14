@@ -62,4 +62,12 @@ class ProfileProvider extends ChangeNotifier {
       rethrow;
     }
   }
+
+  bool _isUsingReward = false;
+  bool get isUsingReward => _isUsingReward;
+
+  void setUsingReward(bool value) {
+    _isUsingReward = value;
+    notifyListeners();
+  }
 }

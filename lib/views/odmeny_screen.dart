@@ -8,7 +8,8 @@ import 'package:vyperto/assets/profile_info.dart';
 class OdmenyScreen extends StatefulWidget {
   final VoidCallback onNavigateToRezervacia;
 
-  const OdmenyScreen({Key? key, required this.onNavigateToRezervacia}) : super(key: key);
+  const OdmenyScreen({Key? key, required this.onNavigateToRezervacia})
+      : super(key: key);
 
   @override
   _OdmenyScreenState createState() => _OdmenyScreenState();
@@ -22,7 +23,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor, // Assuming you have defined primaryColor in 'colors.dart'
+      backgroundColor: primaryColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -34,17 +35,18 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 0),
-                    child: ProfileHeader(profile: fetchedProfile), // Now only ProfileHeader has padding
+                    padding: const EdgeInsets.only(
+                        top: 10, left: 10, right: 10, bottom: 0),
+                    child: ProfileHeader(profile: fetchedProfile),
                   ),
                   Container(
-                    padding: const EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 0), // Added padding for alignment
-
+                    padding: const EdgeInsets.only(
+                        top: 0, left: 10, right: 10, bottom: 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.only(top: 16.0), // Added padding for alignment
+                          padding: EdgeInsets.only(top: 16.0),
                           child: Text(
                             'Kupóny',
                             style: TextStyle(
@@ -55,7 +57,8 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                         ),
                         const SizedBox(height: 8),
                         Card(
-                          elevation: fetchedProfile.body >= COST_WASHING ? 8 : 3,
+                          elevation:
+                              fetchedProfile.body >= COST_WASHING ? 8 : 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -65,29 +68,43 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 5),
-                                fetchedProfile.body < COST_WASHING ? Text("Dostupné od ${COST_WASHING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá!"),
+                                fetchedProfile.body < COST_WASHING
+                                    ? Text(
+                                        "Dostupné od ${COST_WASHING} bodov, máš: ${fetchedProfile.body}")
+                                    : const Text("Hurá!"),
                                 const SizedBox(height: 5),
                               ],
                             ),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize.min, // Ensures the row only takes up needed space
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (fetchedProfile.body >= COST_WASHING)
                                   ElevatedButton(
                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all<Color>(selectedItemColor), // Use an appropriate Color object here
-                                      padding: MaterialStateProperty.all<EdgeInsets>(
-                                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              selectedItemColor),
+                                      padding:
+                                          MaterialStateProperty.all<EdgeInsets>(
+                                        const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
                                       ),
                                     ),
                                     child: const Text(
                                       'Použiť',
-                                      style: TextStyle(fontSize: 12, color: Colors.white),
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      final profileProvider =
+                                          Provider.of<ProfileProvider>(context,
+                                              listen: false);
+                                      profileProvider.setUsingReward(true);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         const SnackBar(
-                                          content: Text('Rezervácia bude zaplatená z vernostných bodov!'),
+                                          content: Text(
+                                              'Rezervácia bude zaplatená z vernostných bodov!'),
                                           duration: Duration(seconds: 2),
                                         ),
                                       );
@@ -105,7 +122,9 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                           ),
                         ),
                         Card(
-                          elevation: fetchedProfile.body >= COST_WASHING_DRYING ? 8 : 3,
+                          elevation: fetchedProfile.body >= COST_WASHING_DRYING
+                              ? 8
+                              : 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -115,24 +134,32 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 5),
-                                fetchedProfile.body < COST_WASHING_DRYING ? Text("Dostupné od ${COST_WASHING_DRYING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá!"),
+                                fetchedProfile.body < COST_WASHING_DRYING
+                                    ? Text(
+                                        "Dostupné od ${COST_WASHING_DRYING} bodov, máš: ${fetchedProfile.body}")
+                                    : const Text("Hurá!"),
                                 const SizedBox(height: 5),
                               ],
                             ),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize.min, // Ensures the row only takes up needed space
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (fetchedProfile.body >= COST_WASHING_DRYING)
                                   ElevatedButton(
                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all<Color>(selectedItemColor), // Use an appropriate Color object here
-                                      padding: MaterialStateProperty.all<EdgeInsets>(
-                                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              selectedItemColor),
+                                      padding:
+                                          MaterialStateProperty.all<EdgeInsets>(
+                                        const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 8),
                                       ),
                                     ),
                                     child: const Text(
                                       'Použiť',
-                                      style: TextStyle(fontSize: 12, color: Colors.white),
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
                                       widget.onNavigateToRezervacia();
@@ -164,7 +191,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                               ],
                             ),
                             trailing: Row(
-                              mainAxisSize: MainAxisSize.min, // Ensures the row only takes up needed space
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   size: 32,

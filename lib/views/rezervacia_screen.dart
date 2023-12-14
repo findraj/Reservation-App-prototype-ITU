@@ -128,6 +128,11 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () {
+              final profileProvider =
+                  Provider.of<ProfileProvider>(context, listen: false);
+              final reservationProvider =
+                  Provider.of<ReservationProvider>(context, listen: false);
+              final profile = profileProvider.profile;
               if (_selectedDay != null && _selectedTime != null) {
                 DateTime dateTime = DateTime(
                   _selectedDay!.year,
@@ -136,35 +141,29 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   int.parse(_selectedTime!.split(':')[0]),
                   int.parse(_selectedTime!.split(':')[1]),
                 );
-
-                // Check if the selected time slot is already reserved
-                if (isTimeSlotReserved(_selectedDay, _selectedTime!)) {
-                  // Added null check with '!'
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Tento časový slot je už rezervovaný')),
-                  );
-                  return;
-                }
-
-                final profileProvider =
-                    Provider.of<ProfileProvider>(context, listen: false);
-                final profile = profileProvider.profile;
-
                 String location = profile.miesto;
                 String machineType =
                     _wantsDryer ? "pracka a susicka" : "pracka";
                 int cost = _wantsDryer ? 17 : 10;
-
-                if (profile.zostatok < cost) {
-                  // If the user doesn't have enough balance, show a notification and exit
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Nedostatok kreditov na účte')),
-                  );
-                  return;
+                if (profileProvider.isUsingReward) {
+                  if (profile.body >= cost) {
+                    profileProvider.updateProfilePoints(profile, -cost);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Nedostatok vernostných bodov')),
+                    );
+                    return;
+                  }
+                } else {
+                  if (profile.zostatok < cost) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Nedostatok kreditov na účte')),
+                    );
+                    return;
+                  }
+                  profileProvider.updateProfileBalance(profile, -cost);
                 }
 
-                // Create new reservation
                 Reservation newReservation = Reservation(
                   machine: machineType,
                   date: dateTime,
@@ -173,25 +172,14 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   isExpired: 0,
                 );
 
-                // Save the reservation and update the profile balance
-                final reservationProvider =
-                    Provider.of<ReservationProvider>(context, listen: false);
                 reservationProvider
                     .providerInsertReservation(newReservation)
                     .then((_) {
-                  // Update user's balance
-                  profileProvider.updateProfileBalance(profile, -cost);
-
-                  // Show success notification
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Rezervacia uspesne ulozena')),
                   );
-
-                  // Debug information
-                  print(
-                      'Rezervacia ulozena: Datum: ${_selectedDay.toString()}, Cas: $_selectedTime');
+                  profileProvider.setUsingReward(false);
                 }).catchError((error) {
-                  // Handle errors during reservation saving
                   print('Chyba pri ukladani rezervacie: $error');
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Chyba pri ukladani rezervacie')),
@@ -201,7 +189,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 print('Vyberte prosim datum a cas');
               }
             },
-            child: const Text('Potvrdit'),
+            child: Text('Potvrdiť'),
           ),
           const SizedBox(height: 20.0),
         ],
