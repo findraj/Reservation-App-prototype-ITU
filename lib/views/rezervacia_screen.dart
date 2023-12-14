@@ -99,10 +99,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             ),
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment
-                .start, // Align the children to the start of the cross axis
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Checkbox for selecting the dryer
               CheckboxListTile(
                 title: Text("Rezervovať aj sušičku"),
                 value: _wantsDryer,
@@ -113,11 +111,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 },
                 secondary: Icon(Icons.local_laundry_service),
               ),
-
-              // Display the calculated cost
               Padding(
-                padding: const EdgeInsets.only(
-                    left: 16.0), // Align with the start of the checkbox
+                padding: const EdgeInsets.only(left: 16.0),
                 child: Text(
                   'Cena: ${calculateCost()} kreditov',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -126,7 +121,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             ],
           ),
           Container(
-            height: 70, // Set a fixed height for the container
+            height: 70,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: availableTimes.length,
