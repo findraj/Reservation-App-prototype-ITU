@@ -268,7 +268,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                             profileProvider.profile,
                                             refundAmount);
                                       }).catchError((error) {
-                                        // Handle the error if deletion fails
                                         print(
                                             'Error deleting reservation: $error');
                                         ScaffoldMessenger.of(context)
