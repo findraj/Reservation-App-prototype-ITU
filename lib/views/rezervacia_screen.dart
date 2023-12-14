@@ -23,16 +23,12 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   String? _selectedTime;
   bool _wantsDryer = false;
 
-  List<String> availableTimes = [
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00"
-  ];
+  int calculateCost() {
+    return _wantsDryer ? 17 : 10;
+  }
+
+  List<String> availableTimes = List<String>.generate(
+      24, (index) => "${index.toString().padLeft(2, '0')}:00");
 
   bool isTimeSlotReserved(DateTime? selectedDay, String timeSlot) {
     if (selectedDay == null) return false;
@@ -102,30 +98,48 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
               },
             ),
           ),
-          CheckboxListTile(
-            title: Text("Pridať aj sušičku"),
-            value: _wantsDryer,
-            onChanged: (bool? value) {
-              setState(() {
-                _wantsDryer = value!;
-              });
-            },
-            secondary: Icon(Icons.local_laundry_service),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment
+                .start, // Align the children to the start of the cross axis
+            children: [
+              // Checkbox for selecting the dryer
+              CheckboxListTile(
+                title: Text("Rezervovať aj sušičku"),
+                value: _wantsDryer,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _wantsDryer = value!;
+                  });
+                },
+                secondary: Icon(Icons.local_laundry_service),
+              ),
+
+              // Display the calculated cost
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 16.0), // Align with the start of the checkbox
+                child: Text(
+                  'Cena: ${calculateCost()} kreditov',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
-          Wrap(
-            spacing: 10.0,
-            children: availableTimes.getRange(0, 4).map((time) {
-              return _buildTimeButton(time);
-            }).toList(),
+          Container(
+            height: 70, // Set a fixed height for the container
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: availableTimes.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: 70,
+                  alignment: Alignment.center,
+                  child: _buildTimeButton(availableTimes[index]),
+                );
+              },
+            ),
           ),
-          const SizedBox(height: 10.0),
-          Wrap(
-            spacing: 10.0,
-            children: availableTimes.getRange(4, 8).map((time) {
-              return _buildTimeButton(time);
-            }).toList(),
-          ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 40.0),
           ElevatedButton(
             onPressed: () {
               final profileProvider =
@@ -191,7 +205,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             },
             child: Text('Potvrdiť'),
           ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 25.0),
         ],
       ),
     );
@@ -208,25 +222,38 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 _selectedTime = time;
               });
             },
-      child: Text(time),
+      child: Text(
+        time,
+        style: TextStyle(
+          fontSize: 13,
+        ),
+      ),
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
             if (isReserved) {
-              return Colors.red; // Color for reserved slots
+              return Colors.red;
             } else if (_selectedTime == time) {
-              return Theme.of(context).primaryColor; // Highlight selected slot
+              return Theme.of(context).primaryColor;
             }
-            return Colors.grey[300]!; // Default for available slots
+            return Colors.grey[300]!;
           },
         ),
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
             if (isReserved || (_selectedTime == time)) {
-              return Colors.white; // Text color for selected or reserved slots
+              return Colors.white;
             }
-            return Colors.black; // Text color for available slots
+            return Colors.black;
           },
+        ),
+        padding: MaterialStateProperty.all<EdgeInsets>(
+          EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+        ),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
       ),
     );
