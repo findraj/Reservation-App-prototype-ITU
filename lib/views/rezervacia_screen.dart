@@ -27,14 +27,12 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     return _wantsDryer ? 17 : 10;
   }
 
-  List<String> availableTimes = List<String>.generate(
-      24, (index) => "${index.toString().padLeft(2, '0')}:00");
+  List<String> availableTimes = List<String>.generate(14, (index) => "${(index + 7).toString().padLeft(2, '0')}:00");
 
   bool isTimeSlotReserved(DateTime? selectedDay, String timeSlot) {
     if (selectedDay == null) return false;
 
-    final reservationProvider =
-        Provider.of<ReservationProvider>(context, listen: false);
+    final reservationProvider = Provider.of<ReservationProvider>(context, listen: false);
     List<Reservation> userReservations = reservationProvider.reservationsList;
 
     DateTime slotDateTime = DateTime(
@@ -137,10 +135,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           const SizedBox(height: 40.0),
           ElevatedButton(
             onPressed: () {
-              final profileProvider =
-                  Provider.of<ProfileProvider>(context, listen: false);
-              final reservationProvider =
-                  Provider.of<ReservationProvider>(context, listen: false);
+              final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+              final reservationProvider = Provider.of<ReservationProvider>(context, listen: false);
               final profile = profileProvider.profile;
               if (_selectedDay != null && _selectedTime != null) {
                 DateTime dateTime = DateTime(
@@ -151,8 +147,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   int.parse(_selectedTime!.split(':')[1]),
                 );
                 String location = profile.miesto;
-                String machineType =
-                    _wantsDryer ? "pracka a susicka" : "pracka";
+                String machineType = _wantsDryer ? "Pranie a sušenie" : "Pranie";
                 int cost = _wantsDryer ? 17 : 10;
                 if (profileProvider.isUsingReward) {
                   if (profile.body >= cost) {
@@ -181,21 +176,21 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   isExpired: 0,
                 );
 
-                reservationProvider
-                    .providerInsertReservation(newReservation)
-                    .then((_) {
+                reservationProvider.providerInsertReservation(newReservation).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Rezervacia uspesne ulozena')),
+                    SnackBar(content: Text('Rezervácia úspešne bola uložená')),
                   );
                   profileProvider.setUsingReward(false);
                 }).catchError((error) {
                   print('Chyba pri ukladani rezervacie: $error');
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Chyba pri ukladani rezervacie')),
+                    SnackBar(content: Text('Chyba pri ukladaní rezervácie')),
                   );
                 });
               } else {
-                print('Vyberte prosim datum a cas');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Vyberte deň a čas rezervácie')),
+                );
               }
             },
             child: Text('Potvrdiť'),
