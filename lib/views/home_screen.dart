@@ -183,6 +183,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         constraints: const BoxConstraints(),
                                         icon: const Icon(Icons.edit_calendar, color: Colors.blue), // You can replace Icons.edit with the desired edit icon
                                         onPressed: () {
+                                          final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+                                          profileProvider.setEditingReservation(true);
+                                          profileProvider.setCurrentReservation(reservation);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Vyberte nový čas rezervácie!'),
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
                                           widget.onNavigateToRezervacia();
                                         }),
                                   const SizedBox(width: 10),

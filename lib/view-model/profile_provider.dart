@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:vyperto/api/profile_api.dart';
 import 'package:vyperto/model/profile.dart';
+import 'package:vyperto/model/reservation.dart';
 
 class ProfileProvider extends ChangeNotifier {
   late ProfileAPI _profileApi;
@@ -9,14 +10,7 @@ class ProfileProvider extends ChangeNotifier {
 
   ProfileProvider() {
     _profileApi = ProfileAPI();
-    _profile = Profile(
-        meno: "",
-        priezvisko: "",
-        email: "",
-        zostatok: 0,
-        body: 0,
-        miesto: "",
-        darkMode: 0);
+    _profile = Profile(meno: "", priezvisko: "", email: "", zostatok: 0, body: 0, miesto: "", darkMode: 0);
     fetchProfile(_profile);
   }
 
@@ -65,9 +59,30 @@ class ProfileProvider extends ChangeNotifier {
 
   bool _isUsingReward = false;
   bool get isUsingReward => _isUsingReward;
+  bool _isEditingReservation = false;
+  bool get isEditingReservation => _isEditingReservation;
 
   void setUsingReward(bool value) {
     _isUsingReward = value;
+    notifyListeners();
+  }
+
+  void setEditingReservation(bool value) {
+    _isEditingReservation = value;
+    notifyListeners();
+  }
+
+  Reservation _currentReservation = Reservation(
+    machine: "",
+    date: DateTime.now(),
+    location: "",
+    isPinVerified: 0,
+    isExpired: 0,
+  );
+  Reservation get currentReservation => _currentReservation;
+
+  void setCurrentReservation(Reservation reservation) {
+    _currentReservation = reservation;
     notifyListeners();
   }
 }

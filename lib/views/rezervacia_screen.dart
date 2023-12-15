@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:vyperto/assets/colors.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
 import 'package:vyperto/model/reservation.dart';
-import 'package:vyperto/model/profile.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'package:vyperto/assets/profile_info.dart';
+import 'package:vyperto/views/odmeny_screen.dart';
 
 class RezervaciaScreen extends StatefulWidget {
   const RezervaciaScreen({Key? key}) : super(key: key);
@@ -100,20 +97,32 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CheckboxListTile(
-                title: Text("Rezervovať aj sušičku"),
-                value: _wantsDryer,
+                title: (Provider.of<ProfileProvider>(context, listen: false).isEditingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie") ? const Text("Sušenie už máš pridané") : const Text("Rezervovať aj sušičku"),
+                value: (Provider.of<ProfileProvider>(context, listen: false).isEditingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie") ? true : _wantsDryer,
+                enabled: (Provider.of<ProfileProvider>(context, listen: false).isEditingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie") ? false : true,
                 onChanged: (bool? value) {
                   setState(() {
                     _wantsDryer = value!;
                   });
                 },
-                secondary: Icon(Icons.local_laundry_service),
+                secondary: const Icon(Icons.local_laundry_service),
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(
-                  'Cena: ${calculateCost()} kreditov',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.monetization_on,
+                      color: Colors.green,
+                    ),
+                    const SizedBox(width: 5.0),
+                    Text(
+                      Provider.of<ProfileProvider>(context, listen: false).isEditingReservation ? 'Cena: ${calculateCost() - 10} kreditov' : 'Cena: ${calculateCost()} kreditov',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -132,7 +141,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
               },
             ),
           ),
-          const SizedBox(height: 40.0),
+          const SizedBox(height: 35.0),
           ElevatedButton(
             onPressed: () {
               final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
@@ -148,24 +157,50 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 );
                 String location = profile.miesto;
                 String machineType = _wantsDryer ? "Pranie a sušenie" : "Pranie";
-                int cost = _wantsDryer ? 17 : 10;
-                if (profileProvider.isUsingReward) {
-                  if (profile.body >= cost) {
-                    profileProvider.updateProfilePoints(profile, -cost);
+                int cost = _wantsDryer ? COST_WASHING_DRYING : COST_WASHING;
+
+                if (profileProvider.isEditingReservation == false) {
+                  if (profileProvider.isUsingReward) {
+                    if (profile.body >= cost) {
+                      profileProvider.updateProfilePoints(profile, -cost);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Nedostatok vernostných bodov')),
+                      );
+                      return;
+                    }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Nedostatok vernostných bodov')),
-                    );
-                    return;
+                    if (profile.zostatok < cost) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Nedostatok kreditov na účte')),
+                      );
+                      return;
+                    }
+                    profileProvider.updateProfileBalance(profile, -cost);
                   }
                 } else {
-                  if (profile.zostatok < cost) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Nedostatok kreditov na účte')),
-                    );
-                    return;
+                  cost -= COST_WASHING;
+                  if (cost != 0) {
+                    profileProvider.updateProfileBalance(profile, -cost);
                   }
-                  profileProvider.updateProfileBalance(profile, -cost);
+                }
+
+                if (profileProvider.isEditingReservation == true) {
+                  Reservation currentReservation = profileProvider.currentReservation;
+                  currentReservation.machine = machineType;
+                  currentReservation.date = dateTime;
+                  currentReservation.location = location;
+                  reservationProvider.providerUpdateReservation(currentReservation).then((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Rezervácia úspešne upravená')),
+                    );
+                  }).catchError((error) {
+                    print('Chyba pri upravovani rezervacie: $error');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Chyba pri upravovaní rezervácie')),
+                    );
+                  });
+                  return;
                 }
 
                 Reservation newReservation = Reservation(
@@ -178,22 +213,21 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
 
                 reservationProvider.providerInsertReservation(newReservation).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Rezervácia úspešne bola uložená')),
+                    const SnackBar(content: Text('Rezervácia úspešne bola uložená')),
                   );
-                  profileProvider.setUsingReward(false);
                 }).catchError((error) {
                   print('Chyba pri ukladani rezervacie: $error');
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Chyba pri ukladaní rezervácie')),
+                    const SnackBar(content: Text('Chyba pri ukladaní rezervácie')),
                   );
                 });
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Vyberte deň a čas rezervácie')),
+                  const SnackBar(content: Text('Vyberte deň a čas rezervácie')),
                 );
               }
             },
-            child: Text('Potvrdiť'),
+            child: const Text('Potvrdiť'),
           ),
           const SizedBox(height: 25.0),
         ],
@@ -214,7 +248,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             },
       child: Text(
         time,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 13,
         ),
       ),
@@ -238,7 +272,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           },
         ),
         padding: MaterialStateProperty.all<EdgeInsets>(
-          EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+          const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
         ),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(

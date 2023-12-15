@@ -31,8 +31,11 @@ class _Page_ControllerState extends State<Page_Controller> {
     });
   }
 
+  bool pageSkip = false;
+
   void navigateToRezervaciaScreen() {
     setState(() {
+      pageSkip = true;
       _currentIndex = 1;
     });
     _pageController.animateToPage(
@@ -92,23 +95,29 @@ class _Page_ControllerState extends State<Page_Controller> {
       ),
       body: PageView(
         onPageChanged: (int newIndex) {
+          if (_currentIndex == 1 && !pageSkip) {
+            Provider.of<ProfileProvider>(context, listen: false).setEditingReservation(false);
+            Provider.of<ProfileProvider>(context, listen: false).setUsingReward(false);
+          }
           setState(() {
             _currentIndex = newIndex;
           });
+          if (_currentIndex == 1) {
+            pageSkip = false;
+          }
         },
         controller: _pageController,
-        children: [
-          HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
-          const RezervaciaScreen(),
-          const CasovacScreen(),
-          OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen)
-        ],
+        children: [HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen), const RezervaciaScreen(), const CasovacScreen(), OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen)],
       ),
       bottomNavigationBar: Container(
         decoration: boxDecoration,
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (int newIndex) {
+            if (_currentIndex == 1 && !pageSkip) {
+              Provider.of<ProfileProvider>(context, listen: false).setEditingReservation(false);
+              Provider.of<ProfileProvider>(context, listen: false).setUsingReward(false);
+            }
             setState(() {
               _currentIndex = newIndex;
             });

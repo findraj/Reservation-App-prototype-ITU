@@ -1,8 +1,8 @@
 class Reservation {
   int? id;
-  final String machine;
-  final DateTime date;
-  final String location;
+  String machine;
+  DateTime date;
+  String location;
   int isPinVerified = 0;
   int isExpired = 0;
 
