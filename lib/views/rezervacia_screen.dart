@@ -341,9 +341,26 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
 
   ElevatedButton _buildTimeButton(String time) {
     bool isReserved = isTimeSlotReserved(_selectedDay, time);
+    bool isPastTimeOnToday = false;
+
+    if (_selectedDay != null) {
+      DateTime now = DateTime.now();
+      DateTime slotDateTime = DateTime(
+        _selectedDay!.year,
+        _selectedDay!.month,
+        _selectedDay!.day,
+        int.parse(time.split(':')[0]),
+        int.parse(time.split(':')[1]),
+      );
+
+      // Check if the time slot is in the past on today's date
+      isPastTimeOnToday = _selectedDay!
+              .isAtSameMomentAs(DateTime(now.year, now.month, now.day)) &&
+          slotDateTime.isBefore(now);
+    }
 
     return ElevatedButton(
-      onPressed: isReserved
+      onPressed: (isReserved || isPastTimeOnToday)
           ? null
           : () {
               setState(() {
@@ -361,6 +378,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           (states) {
             if (isReserved) {
               return Colors.red;
+            } else if (isPastTimeOnToday) {
+              return Colors.pink.shade100; // Light pink for past times on today
             } else if (_selectedTime == time) {
               return Theme.of(context).primaryColor;
             }
@@ -369,7 +388,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
         ),
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (isReserved || (_selectedTime == time)) {
+            if (isReserved || isPastTimeOnToday || (_selectedTime == time)) {
               return Colors.white;
             }
             return Colors.black;
