@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:vyperto/views/odmeny_screen.dart';
 
 class RezervaciaScreen extends StatefulWidget {
-  const RezervaciaScreen({Key? key}) : super(key: key);
+  final VoidCallback onNavigateToHomeScreen;
+  const RezervaciaScreen({Key? key, required this.onNavigateToHomeScreen})
+      : super(key: key);
 
   @override
   _ReservationScreenState createState() => _ReservationScreenState();
@@ -289,6 +291,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                       const SnackBar(
                           content: Text('Rezervácia úspešne upravená')),
                     );
+                    widget.onNavigateToHomeScreen();
                   }).catchError((error) {
                     print('Chyba pri upravovani rezervacie: $error');
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -314,6 +317,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                     const SnackBar(
                         content: Text('Rezervácia úspešne bola uložená')),
                   );
+                  widget.onNavigateToHomeScreen();
                 }).catchError((error) {
                   print('Chyba pri ukladani rezervacie: $error');
                   ScaffoldMessenger.of(context).showSnackBar(

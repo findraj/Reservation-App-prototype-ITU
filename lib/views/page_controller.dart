@@ -40,7 +40,7 @@ class _Page_ControllerState extends State<Page_Controller> {
     });
     _pageController.animateToPage(
       1,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 500),
       curve: Curves.ease,
     );
     // Priprava prechodu z odmien do rezervacie
@@ -55,6 +55,18 @@ class _Page_ControllerState extends State<Page_Controller> {
     //     points: false,
     //   );
     // }
+  }
+
+  void navigateToHomeScreen() {
+    setState(() {
+      pageSkip = true;
+      _currentIndex = 0;
+    });
+    _pageController.animateToPage(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
   }
 
   @override
@@ -96,8 +108,10 @@ class _Page_ControllerState extends State<Page_Controller> {
       body: PageView(
         onPageChanged: (int newIndex) {
           if (_currentIndex == 1 && !pageSkip) {
-            Provider.of<ProfileProvider>(context, listen: false).setEditingReservation(false);
-            Provider.of<ProfileProvider>(context, listen: false).setUsingReward(false);
+            Provider.of<ProfileProvider>(context, listen: false)
+                .setEditingReservation(false);
+            Provider.of<ProfileProvider>(context, listen: false)
+                .setUsingReward(false);
           }
           setState(() {
             _currentIndex = newIndex;
@@ -107,7 +121,12 @@ class _Page_ControllerState extends State<Page_Controller> {
           }
         },
         controller: _pageController,
-        children: [HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen), const RezervaciaScreen(), const CasovacScreen(), OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen)],
+        children: [
+          HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
+          RezervaciaScreen(onNavigateToHomeScreen: navigateToHomeScreen),
+          const CasovacScreen(),
+          OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen)
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: boxDecoration,
@@ -115,8 +134,10 @@ class _Page_ControllerState extends State<Page_Controller> {
           currentIndex: _currentIndex,
           onTap: (int newIndex) {
             if (_currentIndex == 1 && !pageSkip) {
-              Provider.of<ProfileProvider>(context, listen: false).setEditingReservation(false);
-              Provider.of<ProfileProvider>(context, listen: false).setUsingReward(false);
+              Provider.of<ProfileProvider>(context, listen: false)
+                  .setEditingReservation(false);
+              Provider.of<ProfileProvider>(context, listen: false)
+                  .setUsingReward(false);
             }
             setState(() {
               _currentIndex = newIndex;
