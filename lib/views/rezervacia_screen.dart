@@ -14,6 +14,7 @@ class RezervaciaScreen extends StatefulWidget {
 }
 
 class _ReservationScreenState extends State<RezervaciaScreen> {
+  ScrollController _scrollController = ScrollController();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -23,6 +24,27 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedDay = DateTime.now();
+    String findNearestAvailableTime() {
+      DateTime now = DateTime.now();
+      for (String time in availableTimes) {
+        DateTime slotDateTime = DateTime(
+          _selectedDay!.year,
+          _selectedDay!.month,
+          _selectedDay!.day,
+          int.parse(time.split(':')[0]),
+          int.parse(time.split(':')[1]),
+        );
+
+        if (slotDateTime.isAfter(now) &&
+            !isTimeSlotReserved(_selectedDay, time)) {
+          return time;
+        }
+      }
+      return availableTimes[0];
+    }
+
+    _selectedTime = findNearestAvailableTime();
 
     Future.microtask(() {
       bool editingReservation =
@@ -36,8 +58,27 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
 
       setState(() {
         _wantsDryer = isDryingMachine;
+        _selectedDay = DateTime.now();
+        _selectedTime = findNearestAvailableTime();
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        int selectedIndex = availableTimes.indexOf(_selectedTime!);
+        if (selectedIndex != -1) {
+          double offset = selectedIndex * 70.0;
+          _scrollController.animateTo(
+            offset - MediaQuery.of(context).size.width / 2 + 35,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   int calculateCost() {
@@ -173,6 +214,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           Container(
             height: 70,
             child: ListView.builder(
+              controller: _scrollController,
               scrollDirection: Axis.horizontal,
               itemCount: availableTimes.length,
               itemBuilder: (context, index) {
