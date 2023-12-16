@@ -20,8 +20,35 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   String? _selectedTime;
   bool _wantsDryer = false;
 
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      bool editingReservation = Provider.of<ProfileProvider>(context, listen: false).isEditingReservation;
+      bool isDryingMachine = editingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie";
+
+      setState(() {
+        _wantsDryer = isDryingMachine;
+      });
+    });
+  }
+
   int calculateCost() {
-    return _wantsDryer ? 17 : 10;
+    bool editingReservation = Provider.of<ProfileProvider>(context, listen: false).isEditingReservation;
+    bool includesDrying = editingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie";
+
+    if (editingReservation && includesDrying && _wantsDryer) {
+      return 0;
+    } else if (editingReservation && includesDrying && !_wantsDryer) {
+      return COST_WASHING - COST_WASHING_DRYING;
+    } else if (editingReservation && !includesDrying && _wantsDryer) {
+      return COST_WASHING_DRYING - COST_WASHING;
+    } else if (editingReservation && !includesDrying && !_wantsDryer) {
+      return 0;
+    } else {
+      return _wantsDryer ? COST_WASHING_DRYING : COST_WASHING;
+    }
   }
 
   List<String> availableTimes = List<String>.generate(14, (index) => "${(index + 7).toString().padLeft(2, '0')}:00");
@@ -97,12 +124,11 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CheckboxListTile(
-                title: (Provider.of<ProfileProvider>(context, listen: false).isEditingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie") ? const Text("Sušenie už máš pridané") : const Text("Rezervovať aj sušičku"),
-                value: (Provider.of<ProfileProvider>(context, listen: false).isEditingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie") ? true : _wantsDryer,
-                enabled: (Provider.of<ProfileProvider>(context, listen: false).isEditingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie") ? false : true,
+                title: const Text("Rezervovať aj sušičku"),
+                value: _wantsDryer,
                 onChanged: (bool? value) {
                   setState(() {
-                    _wantsDryer = value!;
+                    _wantsDryer = value ?? false;
                   });
                 },
                 secondary: const Icon(Icons.local_laundry_service),
@@ -117,7 +143,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                     ),
                     const SizedBox(width: 5.0),
                     Text(
-                      Provider.of<ProfileProvider>(context, listen: false).isEditingReservation ? 'Cena: ${calculateCost() - 10} kreditov' : 'Cena: ${calculateCost()} kreditov',
+                      Provider.of<ProfileProvider>(context, listen: false).isUsingReward ? 'Cena: ${calculateCost()} bodov' : 'Cena: ${calculateCost()} korún',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -157,7 +183,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 );
                 String location = profile.miesto;
                 String machineType = _wantsDryer ? "Pranie a sušenie" : "Pranie";
-                int cost = _wantsDryer ? COST_WASHING_DRYING : COST_WASHING;
+                int cost = calculateCost();
 
                 if (profileProvider.isEditingReservation == false) {
                   if (profileProvider.isUsingReward) {
@@ -179,7 +205,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                     profileProvider.updateProfileBalance(profile, -cost);
                   }
                 } else {
-                  cost -= COST_WASHING;
                   if (cost != 0) {
                     profileProvider.updateProfileBalance(profile, -cost);
                   }

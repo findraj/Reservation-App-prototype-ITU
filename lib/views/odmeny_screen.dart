@@ -16,7 +16,7 @@ class OdmenyScreen extends StatefulWidget {
 
 // define constant for costs
 const int COST_WASHING = 10;
-const int COST_WASHING_DRYING = 15;
+const int COST_WASHING_DRYING = 17;
 
 class _OdmenyScreenState extends State<OdmenyScreen> {
   @override
