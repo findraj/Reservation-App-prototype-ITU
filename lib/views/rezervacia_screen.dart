@@ -209,6 +209,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ),
           Container(
@@ -226,7 +227,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
               },
             ),
           ),
-          const SizedBox(height: 35.0),
+          const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () {
               final profileProvider =
@@ -328,7 +329,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
             },
             child: const Text('Potvrdiť'),
           ),
-          const SizedBox(height: 25.0),
+          const SizedBox(height: 5),
         ],
       ),
     );
