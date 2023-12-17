@@ -32,8 +32,23 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     _selectedDay = DateTime.now();
     _selectedDormitory =
         Provider.of<ProfileProvider>(context, listen: false).profile.miesto;
+
     String findNearestAvailableTime() {
       DateTime now = DateTime.now();
+      DateTime lastTimeSlotToday = DateTime(
+        _selectedDay!.year,
+        _selectedDay!.month,
+        _selectedDay!.day,
+        int.parse(availableTimes.last.split(':')[0]),
+        int.parse(availableTimes.last.split(':')[1]),
+      );
+
+      if (now.isAfter(lastTimeSlotToday)) {
+        _selectedDay = _selectedDay!.add(Duration(days: 1));
+        now = DateTime(
+            _selectedDay!.year, _selectedDay!.month, _selectedDay!.day);
+      }
+
       for (String time in availableTimes) {
         DateTime slotDateTime = DateTime(
           _selectedDay!.year,
@@ -48,6 +63,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           return time;
         }
       }
+
+      _selectedDay = _selectedDay!.add(Duration(days: 1));
       return availableTimes[0];
     }
 
