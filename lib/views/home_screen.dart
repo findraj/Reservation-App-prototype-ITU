@@ -80,10 +80,29 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Consumer<ReservationProvider>(
               builder: (context, reservationProvider, child) {
-                final reservationsList = reservationProvider.reservationsList;
-                reservationsList.sort((a, b) => a.date.compareTo(b.date));
+                List<Reservation> reservationsList = reservationProvider.reservationsList;
 
-                if (reservationsList.isEmpty) {
+                // Filtrovanie expirovanych rezervacii
+                List<Reservation> validReservations = reservationsList.where((reservation) {
+                  bool isExpired = false;
+                  if (reservation.machine == "Pranie a sušenie" && reservation.date.isBefore(DateTime.now().subtract(const Duration(hours: 2, minutes: 30)))) {
+                    isExpired = true;
+                  } else if (reservation.machine != "Pranie a sušenie" && reservation.date.isBefore(DateTime.now().subtract(const Duration(hours: 1, minutes: 30)))) {
+                    isExpired = true;
+                  }
+
+                  // Ak je rezervacia expirovana, tak ju nastav na expirovanu v databaze
+                  if (isExpired && reservation.isExpired != 1) {
+                    reservation.isExpired = 1;
+                    reservationProvider.providerUpdateReservation(reservation);
+                  }
+
+                  // Pridaj rezervaciu do zoznamu, ak nie je expirovana
+                  return !isExpired;
+                }).toList();
+                validReservations.sort((a, b) => a.date.compareTo(b.date));
+
+                if (validReservations.isEmpty) {
                   return Container(
                     alignment: Alignment.center,
                     child: Center(
@@ -122,34 +141,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       reservationProvider.fetchReservations();
                     },
                     child: ListView.builder(
-                      itemCount: reservationsList.length,
+                      itemCount: validReservations.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        Reservation reservation = reservationsList[index];
-
-                        // Kontrola ci je rezervacia expirovana
-                        bool isExpired = false;
-                        if (reservation.machine == "Pranie a sušenie" &&
-                            reservation.date.isBefore(DateTime.now().subtract(
-                                const Duration(hours: 2, minutes: 30)))) {
-                          isExpired = true;
-                        } else if (reservation.machine != "Pranie a sušenie" &&
-                            reservation.date.isBefore(DateTime.now().subtract(
-                                const Duration(hours: 1, minutes: 30)))) {
-                          isExpired = true;
-                        }
-
-                        // Nastav atribut isExpired v databaze na 1 ak je rezervacia expirovana
-                        if (isExpired && reservation.isExpired != 1) {
-                          reservation.isExpired = 1;
-                          reservationProvider
-                              .providerUpdateReservation(reservation);
-                        }
-
-                        // Nevypis rezervaciu ak je expirovana
-                        if (isExpired) {
-                          return const SizedBox.shrink();
-                        }
+                        Reservation reservation = validReservations[index];
 
                         String formattedDate =
                             DateFormat('yyyy-MM-dd').format(reservation.date);
