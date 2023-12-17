@@ -4,7 +4,7 @@ import 'package:vyperto/assets/colors.dart';
 import 'package:vyperto/model/reservation.dart';
 import 'package:vyperto/model/profile.dart';
 import 'dart:math';
-
+import 'package:intl/intl.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
 
@@ -163,6 +163,10 @@ class _ProfileRouteState extends State<ProfileRoute> {
   @override
   Widget build(BuildContext context) {
     List<Reservation> historyReservations = Provider.of<ReservationProvider>(context, listen: true).reservationsList;
+    List<Reservation> filteredReservations = historyReservations
+      .where((reservation) =>
+          reservation.isPinVerified == 1 || reservation.isExpired == 1)
+      .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -248,12 +252,51 @@ class _ProfileRouteState extends State<ProfileRoute> {
             style: Theme.of(context).textTheme.headline6,
           ),
           const Divider(),
-          ...historyReservations
+          ...filteredReservations
               .map((reservation) => ListTile(
-                    title: Text('Rezervácia: ${reservation.machine}, Dátum: ${reservation.date}, Miesto: ${reservation.location}'),
                     leading: Icon(Icons.history, color: Theme.of(context).primaryColor),
-                  ))
-              .toList(),
+                    title: Text("${reservation.machine}",
+                        style: (reservation.isPinVerified == 1)
+                            ? const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Color.fromARGB(255, 51, 213, 135))
+                            : null),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 5),
+                        Text("Miesto: ${reservation.location}"),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Dátum: ${DateFormat('yyyy-MM-dd')
+                              .format(reservation.date)}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: !(reservation.isPinVerified ==
+                                        1) &&
+                                    DateTime.now()
+                                        .isAfter(reservation.date)
+                                ? Colors.red
+                                : null, // If nearest reservation and time is past, then red
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Čas: ${DateFormat('HH:mm')
+                              .format(reservation.date)}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: !(reservation.isPinVerified ==
+                                        1) &&
+                                    DateTime.now()
+                                        .isAfter(reservation.date)
+                                ? Colors.red
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),),)
         ],
       ),
     );
