@@ -16,7 +16,6 @@ class ProfileRoute extends StatefulWidget {
 }
 
 class _ProfileRouteState extends State<ProfileRoute> {
-  String _selectedLocation = 'Koleje pod Palackého vrchem'; // Default value for selected location
   List<String> locations = ['Koleje pod Palackého vrchem', 'Purkyňove koleje']; // Available locations
   TextEditingController _codeController = TextEditingController(); // Controller for code input
 
@@ -193,7 +192,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
                   Profile fetchedProfile = profileProvider.profile;
 
                   // Use null-aware operator to handle null values
-                  String displayName = "${fetchedProfile.meno ?? ''} ${fetchedProfile.priezvisko ?? ''}";
+                  String displayName = "${fetchedProfile.meno} ${fetchedProfile.priezvisko}";
 
                   return Text(displayName);
                 },
@@ -214,7 +213,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
             value: Provider.of<ProfileProvider>(context, listen: true).profile.miesto,
             onChanged: (String? newValue) {
               setState(() {
-                _selectedLocation = newValue!;
+                String _selectedLocation = newValue!;
               });
               Profile previousProfile = Provider.of<ProfileProvider>(context, listen: false).profile;
               Profile newProfile = Profile(
@@ -241,7 +240,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
           Text(
             '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK   ${Provider.of<ProfileProvider>(context, listen: false).profile.body} bodov',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
             )
@@ -319,6 +318,13 @@ class _ProfileRouteState extends State<ProfileRoute> {
                                 ? Colors.red
                                 : null,
                           ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          !(reservation.machine == 'Pranie')
+                           ? "Cena: 10 CZK"
+                           : "Cena: 17 CZK",
+
                         ),
                       ],
                     ),),)
