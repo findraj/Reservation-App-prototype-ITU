@@ -10,7 +10,8 @@ import 'package:vyperto/views/odmeny_screen.dart';
 
 class RezervaciaScreen extends StatefulWidget {
   final VoidCallback onNavigateToHomeScreen;
-  const RezervaciaScreen({Key? key, required this.onNavigateToHomeScreen}) : super(key: key);
+  const RezervaciaScreen({Key? key, required this.onNavigateToHomeScreen})
+      : super(key: key);
 
   @override
   _ReservationScreenState createState() => _ReservationScreenState();
@@ -39,7 +40,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           int.parse(time.split(':')[1]),
         );
 
-        if (slotDateTime.isAfter(now) && !isTimeSlotReserved(_selectedDay, time)) {
+        if (slotDateTime.isAfter(now) &&
+            !isTimeSlotReserved(_selectedDay, time)) {
           return time;
         }
       }
@@ -49,8 +51,14 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     _selectedTime = findNearestAvailableTime();
 
     Future.microtask(() {
-      bool editingReservation = Provider.of<ProfileProvider>(context, listen: false).isEditingReservation;
-      bool isDryingMachine = editingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie";
+      bool editingReservation =
+          Provider.of<ProfileProvider>(context, listen: false)
+              .isEditingReservation;
+      bool isDryingMachine = editingReservation &&
+          Provider.of<ProfileProvider>(context, listen: false)
+                  .currentReservation
+                  .machine ==
+              "Pranie a sušenie";
 
       setState(() {
         _wantsDryer = isDryingMachine;
@@ -80,8 +88,14 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   }
 
   int calculateCost() {
-    bool editingReservation = Provider.of<ProfileProvider>(context, listen: false).isEditingReservation;
-    bool includesDrying = editingReservation && Provider.of<ProfileProvider>(context, listen: false).currentReservation.machine == "Pranie a sušenie";
+    bool editingReservation =
+        Provider.of<ProfileProvider>(context, listen: false)
+            .isEditingReservation;
+    bool includesDrying = editingReservation &&
+        Provider.of<ProfileProvider>(context, listen: false)
+                .currentReservation
+                .machine ==
+            "Pranie a sušenie";
 
     if (editingReservation && includesDrying && _wantsDryer) {
       return 0;
@@ -96,12 +110,14 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     }
   }
 
-  List<String> availableTimes = List<String>.generate(14, (index) => "${(index + 7).toString().padLeft(2, '0')}:00");
+  List<String> availableTimes = List<String>.generate(
+      14, (index) => "${(index + 7).toString().padLeft(2, '0')}:00");
 
   bool isTimeSlotReserved(DateTime? selectedDay, String timeSlot) {
     if (selectedDay == null) return false;
 
-    final reservationProvider = Provider.of<ReservationProvider>(context, listen: false);
+    final reservationProvider =
+        Provider.of<ReservationProvider>(context, listen: false);
     List<Reservation> userReservations = reservationProvider.reservationsList;
 
     DateTime slotDateTime = DateTime(
@@ -188,7 +204,10 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                     ),
                     const SizedBox(width: 5.0),
                     Text(
-                      Provider.of<ProfileProvider>(context, listen: false).isUsingReward ? 'Cena: ${calculateCost()} bodov' : 'Cena: ${calculateCost()} korún',
+                      Provider.of<ProfileProvider>(context, listen: false)
+                              .isUsingReward
+                          ? 'Cena: ${calculateCost()} bodov'
+                          : 'Cena: ${calculateCost()} korún',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -217,8 +236,10 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           const SizedBox(height: 20.0),
           ElevatedButton(
             onPressed: () {
-              final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-              final reservationProvider = Provider.of<ReservationProvider>(context, listen: false);
+              final profileProvider =
+                  Provider.of<ProfileProvider>(context, listen: false);
+              final reservationProvider =
+                  Provider.of<ReservationProvider>(context, listen: false);
               final profile = profileProvider.profile;
               if (_selectedDay != null && _selectedTime != null) {
                 DateTime dateTime = DateTime(
@@ -229,30 +250,37 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   int.parse(_selectedTime!.split(':')[1]),
                 );
                 String location = profile.miesto;
-                String machineType = _wantsDryer ? "Pranie a sušenie" : "Pranie";
+                String machineType =
+                    _wantsDryer ? "Pranie a sušenie" : "Pranie";
                 int cost = calculateCost();
                 int bod = _wantsDryer ? 2 : 1;
                 if (profileProvider.isEditingReservation == true) {
-                  Reservation currentReservation = profileProvider.currentReservation;
+                  Reservation currentReservation =
+                      profileProvider.currentReservation;
                   currentReservation.machine = machineType;
                   currentReservation.date = dateTime;
                   currentReservation.location = location;
-                  reservationProvider.providerUpdateReservation(currentReservation).then((_) {
+                  reservationProvider
+                      .providerUpdateReservation(currentReservation)
+                      .then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Rezervácia úspešne upravená')),
+                      const SnackBar(
+                          content: Text('Rezervácia úspešne upravená')),
                     );
                     widget.onNavigateToHomeScreen();
                   }).catchError((error) {
                     print('Chyba pri upravovani rezervacie: $error');
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Chyba pri upravovaní rezervácie')),
+                      const SnackBar(
+                          content: Text('Chyba pri upravovaní rezervácie')),
                     );
                   });
                   return;
                 }
                 if (dateTime.isBefore(_focusedDay)) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Nemôžete rezervovať čas v minulosti')),
+                    const SnackBar(
+                        content: Text('Nemôžete rezervovať čas v minulosti')),
                   );
                   return;
                 } else {
@@ -268,22 +296,12 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   if (profileProvider.isUsingReward) {
                     newReservation.wasFree = 1;
                   }
-
-                  reservationProvider.providerInsertReservation(newReservation).then((_) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Rezervácia úspešne bola uložená')),
-                    );
-                    if (profileProvider.isEditingReservation == false) {
-                      if (profileProvider.isUsingReward) {
-                        if (profile.body >= cost) {
-                          profileProvider.updateProfilePoints(profile, -cost);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Nedostatok vernostných bodov')),
-                          );
-                          return;
-                        }
+                  if (profileProvider.isEditingReservation == false) {
+                    if (profileProvider.isUsingReward) {
+                      if (profile.body >= cost) {
+                        profileProvider.updateProfilePoints(profile, -cost);
                       } else {
+<<<<<<< HEAD
                         if (profile.zostatok < cost) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Nedostatok kreditov na účte')),
@@ -298,13 +316,40 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                           Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
                         }
                         profileProvider.updateProfilePoints(profile, bod);
+=======
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Nedostatok vernostných bodov')),
+                        );
+                        return;
+                      }
+                    } else {
+                      if (profile.zostatok < cost) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Nedostatok kreditov na účte')),
+                        );
+                        return;
+                      } else {
+                        profileProvider.updateProfileBalance(profile, -cost);
+>>>>>>> origin/main
                       }
                     }
+                  }
+                  reservationProvider
+                      .providerInsertReservation(newReservation)
+                      .then((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Rezervácia úspešne bola uložená')),
+                    );
+                    profileProvider.updateProfilePoints(profile, bod);
                     widget.onNavigateToHomeScreen();
                   }).catchError((error) {
                     print('Chyba pri ukladani rezervacie: $error');
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Chyba pri ukladaní rezervácie')),
+                      const SnackBar(
+                          content: Text('Chyba pri ukladaní rezervácie')),
                     );
                   });
                 }
