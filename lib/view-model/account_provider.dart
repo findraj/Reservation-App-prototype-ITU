@@ -21,7 +21,7 @@ class AccountProvider extends ChangeNotifier {
     final List<Account> fetchedAccounts = await _accountApi.fetchAccounts();
     _accounts = fetchedAccounts;
 
-    notifyListeners(); // Notify listeners to rebuild UI if necessary.
+    notifyListeners();
   }
 
   Future<void> providerInsertAccount(
@@ -30,11 +30,11 @@ class AccountProvider extends ChangeNotifier {
     await _accountApi.insertAccount(account);
     await fetchAccounts();
   }
-  
+
   Future<void> providerDeleteAccount(
     Account account,
-    ) async {
-      await _accountApi.deleteAccount(account); // Corrected to pass a Reservation object
-      await fetchAccounts();
-  } // Refresh the list of reservations
+  ) async {
+    await _accountApi.deleteAccount(account);
+    await fetchAccounts();
+  }
 }
