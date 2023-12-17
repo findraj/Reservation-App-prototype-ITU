@@ -1,7 +1,6 @@
 /// ReservationProvider - Poskytovatel stavu a funkcnosti pre spravu rezervacii.
 ///
-/// Autor: Marko Olešák xolesa00
-/// 
+/// Autor: Filip Botlo (xbotlo01)
 /// Tato trieda spravuje zoznam rezervacii a interaguje s ReservationAPI
 /// pre ziskavanie, vkladanie, aktualizaciu a mazanie rezervacii.
 ///
