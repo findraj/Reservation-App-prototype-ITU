@@ -43,10 +43,9 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
         int.parse(availableTimes.last.split(':')[1]),
       );
 
+      // If the current time is past the last slot of today, do not select any time for today
       if (now.isAfter(lastTimeSlotToday)) {
-        _selectedDay = _selectedDay!.add(Duration(days: 1));
-        now = DateTime(
-            _selectedDay!.year, _selectedDay!.month, _selectedDay!.day);
+        return "";
       }
 
       for (String time in availableTimes) {
@@ -64,8 +63,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
         }
       }
 
-      _selectedDay = _selectedDay!.add(Duration(days: 1));
-      return availableTimes[0];
+      // If all times of the current day are reserved, return empty string
+      return "";
     }
 
     _selectedTime = findNearestAvailableTime();
