@@ -239,7 +239,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
           const SizedBox(height: 24),
 
           Text(
-            '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK',
+            '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK   ${Provider.of<ProfileProvider>(context, listen: false).profile.body} bodov',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 25,
@@ -252,16 +252,30 @@ class _ProfileRouteState extends State<ProfileRoute> {
           TextButton(
             style: TextButton.styleFrom(backgroundColor: Color.fromARGB(255, 223, 223, 223)),
             onPressed: _changeBalance,
-            child: Text('Dobyť peniaze'),
+            child: const Text('Dobyť peniaze'),
           ),
 
           const SizedBox(height: 24),
 
           // Laundry history section
-          Text(
-            'História',
-            style: Theme.of(context).textTheme.headline6,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'História',
+              style: Theme.of(context).textTheme.headline6,
+              ),
+
+              TextButton(
+                onPressed: (){
+                  for (Reservation reservation in List.from(filteredReservations)){
+                    Provider.of<ReservationProvider>(context, listen: false).providerDeleteReservation(reservation);
+                  }
+                },
+                child: const Text('Vymazať')),
+            ],
           ),
+          
           const Divider(),
           ...filteredReservations
               .map((reservation) => ListTile(
