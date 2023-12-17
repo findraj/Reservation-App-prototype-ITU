@@ -270,11 +270,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                       );
                       return;
                     }
-                    profileProvider.updateProfileBalance(profile, -cost);
-                  }
-                } else {
-                  if (cost != 0) {
-                    profileProvider.updateProfileBalance(profile, -cost);
                   }
                 }
                 if (profileProvider.isEditingReservation == true) {
@@ -322,6 +317,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                       const SnackBar(
                           content: Text('Rezervácia úspešne bola uložená')),
                     );
+                    profileProvider.updateProfileBalance(profile, -cost);
                     profileProvider.updateProfilePoints(profile, bod);
                     widget.onNavigateToHomeScreen();
                   }).catchError((error) {
