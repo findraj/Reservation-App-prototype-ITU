@@ -24,11 +24,14 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   DateTime? _selectedDay;
   String? _selectedTime;
   bool _wantsDryer = false;
+  String? _selectedDormitory;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = DateTime.now();
+    _selectedDormitory =
+        Provider.of<ProfileProvider>(context, listen: false).profile.miesto;
     String findNearestAvailableTime() {
       DateTime now = DateTime.now();
       for (String time in availableTimes) {
@@ -116,6 +119,9 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
   bool isTimeSlotReserved(DateTime? selectedDay, String timeSlot) {
     if (selectedDay == null) return false;
 
+    final String selectedDormitory =
+        Provider.of<ProfileProvider>(context, listen: false).profile.miesto;
+
     final reservationProvider =
         Provider.of<ReservationProvider>(context, listen: false);
     List<Reservation> userReservations = reservationProvider.reservationsList;
@@ -129,7 +135,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     );
 
     return userReservations.any((reservation) {
-      return reservation.date.isAtSameMomentAs(slotDateTime);
+      return reservation.date.isAtSameMomentAs(slotDateTime) &&
+          reservation.location == selectedDormitory;
     });
   }
 
@@ -317,10 +324,14 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                       } else {
                         profileProvider.updateProfileBalance(profile, -cost);
                         Account account = Account(
-                          balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
+                          balance: Provider.of<ProfileProvider>(context,
+                                  listen: false)
+                              .profile
+                              .zostatok,
                           price: -cost,
                         );
-                        Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
+                        Provider.of<AccountProvider>(context, listen: false)
+                            .providerInsertAccount(account);
                       }
                     }
                   }
