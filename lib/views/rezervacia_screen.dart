@@ -301,22 +301,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                       if (profile.body >= cost) {
                         profileProvider.updateProfilePoints(profile, -cost);
                       } else {
-<<<<<<< HEAD
-                        if (profile.zostatok < cost) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Nedostatok kreditov na účte')),
-                          );
-                          return;
-                        } else {
-                          profileProvider.updateProfileBalance(profile, -cost);
-                          Account account = Account(
-                            balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
-                            price: -cost,
-                          );
-                          Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
-                        }
-                        profileProvider.updateProfilePoints(profile, bod);
-=======
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content: Text('Nedostatok vernostných bodov')),
@@ -332,7 +316,11 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                         return;
                       } else {
                         profileProvider.updateProfileBalance(profile, -cost);
->>>>>>> origin/main
+                        Account account = Account(
+                          balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
+                          price: -cost,
+                        );
+                        Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
                       }
                     }
                   }

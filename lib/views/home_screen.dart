@@ -439,6 +439,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           profileProvider.updateProfileBalance(
                                               profileProvider.profile,
                                               refundAmount);
+                                          Account account = Account(
+                                            balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
+                                            price: refundAmount,
+                                          );
+                                          Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
                                         }
                                         profileProvider.updateProfilePoints(
                                             profileProvider.profile,
