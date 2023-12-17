@@ -17,7 +17,7 @@ class CasovacScreen extends StatefulWidget {
 class _CasovacScreenState extends State<CasovacScreen> {
   Timer? _timer;
   Duration _duration = Duration();
-  Duration selectedDuration = Duration(hours: 0,minutes: 0,seconds: 0);
+  Duration selectedDuration = Duration(hours: 0, minutes: 0, seconds: 0);
   bool _isRunning = false;
   String _selectedPreset = '';
   AudioPlayer audioPlayer = AudioPlayer(); // Create an instance of AudioPlayer
@@ -70,7 +70,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
   Future<void> _setCustomTime() async {
     showCupertinoModalPopup(
         context: context,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return Container(
             height: 200,
             color: CupertinoColors.white,
@@ -81,7 +81,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
                   children: [
                     CupertinoButton(
                       child: Text("Zrušiť"),
-                      onPressed: (){
+                      onPressed: () {
                         Navigator.of(context).pop();
                       },
                     ),
@@ -99,20 +99,18 @@ class _CasovacScreenState extends State<CasovacScreen> {
                 ),
                 Expanded(
                   child: CupertinoTimerPicker(
-                     mode: CupertinoTimerPickerMode.hms,
+                      mode: CupertinoTimerPickerMode.hms,
                       initialTimerDuration: selectedDuration,
-                      onTimerDurationChanged:  (Duration duration){
-                       setState(() {
-                         selectedDuration = duration;
-                       });
-                      }
-                  ),
+                      onTimerDurationChanged: (Duration duration) {
+                        setState(() {
+                          selectedDuration = duration;
+                        });
+                      }),
                 )
               ],
             ),
           );
-        }
-        );
+        });
   }
 
   @override
@@ -138,7 +136,9 @@ class _CasovacScreenState extends State<CasovacScreen> {
           color: isSelected ? Colors.blue[100] : Colors.grey[200],
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? Colors.blue : const Color.fromARGB(255, 194, 178, 178),
+            color: isSelected
+                ? Colors.blue
+                : const Color.fromARGB(255, 194, 178, 178),
             width: 1,
           ),
         ),
@@ -158,7 +158,8 @@ class _CasovacScreenState extends State<CasovacScreen> {
         child: Column(
           children: [
             Container(
-              child: Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
+              child: Consumer<ProfileProvider>(
+                  builder: (context, profileProvider, child) {
                 Profile fetchedProfile = profileProvider.profile;
                 return ProfileHeader(profile: fetchedProfile);
               }),
@@ -168,13 +169,24 @@ class _CasovacScreenState extends State<CasovacScreen> {
               onTap: _setCustomTime,
               child: Text(
                 '${_duration.inHours.toString().padLeft(2, '0')}:${(_duration.inMinutes % 60).toString().padLeft(2, '0')}:${(_duration.inSeconds % 60).toString().padLeft(2, '0')}',
-                style: const TextStyle(fontSize: 60, color: Colors.blue, decoration: TextDecoration.underline),
+                style: const TextStyle(
+                    fontSize: 60,
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline),
               ),
             ),
             const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [ElevatedButton(onPressed: _isRunning ? null : _startTimer, child: const Text('Štart')), ElevatedButton(onPressed: _stopTimer, child: const Text('Stop')), ElevatedButton(onPressed: _resetTimer, child: const Text('Reset'))],
+              children: [
+                ElevatedButton(
+                    onPressed: _isRunning ? null : _startTimer,
+                    child: const Text('Štart')),
+                ElevatedButton(
+                    onPressed: _stopTimer, child: const Text('Stop')),
+                ElevatedButton(
+                    onPressed: _resetTimer, child: const Text('Reset'))
+              ],
             ),
             const SizedBox(height: 30),
             const Divider(),
@@ -184,9 +196,9 @@ class _CasovacScreenState extends State<CasovacScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            _customTimeTile('7 min'),
+            _customTimeTile('45 min'),
             const SizedBox(height: 20),
-            _customTimeTile('48 min'),
+            _customTimeTile('60 min'),
             const SizedBox(height: 20),
             _customTimeTile('90 min'),
           ],
