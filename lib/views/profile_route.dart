@@ -16,7 +16,6 @@ class ProfileRoute extends StatefulWidget {
 }
 
 class _ProfileRouteState extends State<ProfileRoute> {
-  String _selectedLocation = 'Koleje pod Palackého vrchem'; // Default value for selected location
   List<String> locations = ['Koleje pod Palackého vrchem', 'Purkyňove koleje']; // Available locations
   TextEditingController _codeController = TextEditingController(); // Controller for code input
 
@@ -193,7 +192,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
                   Profile fetchedProfile = profileProvider.profile;
 
                   // Use null-aware operator to handle null values
-                  String displayName = "${fetchedProfile.meno ?? ''} ${fetchedProfile.priezvisko ?? ''}";
+                  String displayName = "${fetchedProfile.meno} ${fetchedProfile.priezvisko}";
 
                   return Text(displayName);
                 },
@@ -214,7 +213,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
             value: Provider.of<ProfileProvider>(context, listen: true).profile.miesto,
             onChanged: (String? newValue) {
               setState(() {
-                _selectedLocation = newValue!;
+                String _selectedLocation = newValue!;
               });
               Profile previousProfile = Provider.of<ProfileProvider>(context, listen: false).profile;
               Profile newProfile = Profile(
@@ -239,9 +238,9 @@ class _ProfileRouteState extends State<ProfileRoute> {
           const SizedBox(height: 24),
 
           Text(
-            '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK',
+            '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK   ${Provider.of<ProfileProvider>(context, listen: false).profile.body} bodov',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
             )
@@ -252,16 +251,30 @@ class _ProfileRouteState extends State<ProfileRoute> {
           TextButton(
             style: TextButton.styleFrom(backgroundColor: Color.fromARGB(255, 223, 223, 223)),
             onPressed: _changeBalance,
-            child: Text('Dobyť peniaze'),
+            child: const Text('Dobyť peniaze'),
           ),
 
           const SizedBox(height: 24),
 
           // Laundry history section
-          Text(
-            'História',
-            style: Theme.of(context).textTheme.headline6,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'História',
+              style: Theme.of(context).textTheme.headline6,
+              ),
+
+              TextButton(
+                onPressed: (){
+                  for (Reservation reservation in List.from(filteredReservations)){
+                    Provider.of<ReservationProvider>(context, listen: false).providerDeleteReservation(reservation);
+                  }
+                },
+                child: const Text('Vymazať')),
+            ],
           ),
+          
           const Divider(),
           ...filteredReservations
               .map((reservation) => ListTile(
@@ -305,6 +318,13 @@ class _ProfileRouteState extends State<ProfileRoute> {
                                 ? Colors.red
                                 : null,
                           ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          !(reservation.machine == 'Pranie')
+                           ? "Cena: 10 CZK"
+                           : "Cena: 17 CZK",
+
                         ),
                       ],
                     ),),)
