@@ -1,6 +1,6 @@
 /// CasovacScreen - obrazovka casovaca pre Flutter aplikaciu
 ///
-///Autor: Ján Findra xfindr01 - Vyber času a predvolené časy
+///Autor: Ján Findra xfindr01 - Výber času a predvolené časy
 ///Autor: Filip Botlo xbotlo01 - Aktivačné tlačítka a budík
 ///
 /// Táto obrazovka umožňuje užívateľom nastaviť a ovládať časovač
@@ -15,7 +15,7 @@
 ///
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart'; // Import the audioplayers package
+import 'package:audioplayers/audioplayers.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:vyperto/assets/profile_info.dart';
@@ -130,7 +130,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    audioPlayer.dispose(); // Dispose the audio player
+    audioPlayer.dispose();
     super.dispose();
   }
 

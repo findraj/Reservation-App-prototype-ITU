@@ -1,3 +1,7 @@
+/// account_api.dart
+/// API pre databazu account
+///
+/// Autor: Jan Findra (xfindr01)
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
