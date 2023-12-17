@@ -1,6 +1,6 @@
 /// `profile_api` API profilu
 ///
-///  Autor: Marko Olešák xolesa00
+/// Autor: Marko Olešák xolesa00
 /// 
 /// API profilu, ktore obsahuje vsetky potrebne metody na pracu s databazou.
 /// Obsahuje metody na vytvorenie, ziskanie, aktualizaciu a vymazanie profilu.

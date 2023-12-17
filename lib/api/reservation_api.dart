@@ -1,6 +1,6 @@
 /// `reservation_api` API rezervacie
 ///
-///  Autor: Marko Olešák xolesa00
+/// Autor: Marko Olešák xolesa00
 /// 
 /// API rezervacie, ktore obsahuje vsetky potrebne metody na pracu s databazou.
 /// Obsahuje metody na vytvorenie, ziskanie, aktualizaciu a vymazanie rezervacie.

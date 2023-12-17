@@ -9,7 +9,6 @@
 /// - Staticka inicializacia uzivatela, kedze aplikacia nema prihlasovanie.
 /// - Spustenie aplikacie.
 ///
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vyperto/view-model/account_provider.dart';
@@ -56,7 +55,6 @@ Future<void> initializeUser() async {
     ProfileAPI _profileAPI = ProfileAPI();
     await _profileAPI.insertProfile(profile);
   } catch (error) {
-    // Handle errors appropriately
     print('Initialization error: $error');
   }
 }

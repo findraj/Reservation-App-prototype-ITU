@@ -1,5 +1,7 @@
 /// ProfileProvider - Poskytovatel stavu a funkcnosti pre spravu uzivatelskych profilov.
 ///
+/// Autor: Marko Olešák xolesa00
+///
 /// Tato trieda spravuje uzivatelsky profil a interaguje s ProfileAPI
 /// pre ziskavanie, aktualizaciu a manipulaciu s profilovymi datami.
 ///
@@ -9,8 +11,8 @@
 /// - Spravuje stav, ci uzivatel pouziva vernostne odmeny alebo edituje rezervacie.
 ///
 /// ## Pouzitie
-/// Pouziva sa v spojeni s `Provider` balickom pre spristupnenie dat
-/// o uzivatelskom profile cez celej aplikacii.
+/// - Pouziva sa v spojeni s `Provider` balickom pre spristupnenie dat
+///  o uzivatelskom profile cez celej aplikacii.
 import 'package:flutter/foundation.dart';
 import 'package:vyperto/api/profile_api.dart';
 import 'package:vyperto/model/profile.dart';
