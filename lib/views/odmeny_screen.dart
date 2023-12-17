@@ -134,6 +134,8 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                                       style: TextStyle(fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
+                                      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+                                      profileProvider.setUsingReward(true);
                                       widget.onNavigateToRezervacia();
                                     },
                                   ),

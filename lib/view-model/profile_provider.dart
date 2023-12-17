@@ -78,6 +78,7 @@ class ProfileProvider extends ChangeNotifier {
     location: "",
     isPinVerified: 0,
     isExpired: 0,
+    wasFree: 0,
   );
   Reservation get currentReservation => _currentReservation;
 

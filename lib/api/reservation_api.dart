@@ -9,8 +9,8 @@ class ReservationAPI {
       join(await getDatabasesPath(), 'reservation.db'),
       onCreate: (db, version) async {
         await db.execute(
-          'DROP TABLE IF EXISTS reservations',
-          //'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT, isPinVerified BOOLEAN DEFAULT 0, isExpired BOOLEAN DEFAULT 0)',
+          // 'DROP TABLE IF EXISTS reservations',
+          'CREATE TABLE reservations(id INTEGER PRIMARY KEY AUTOINCREMENT, machine TEXT, date INTEGER, location TEXT, isPinVerified BOOLEAN DEFAULT 0, isExpired BOOLEAN DEFAULT 0, wasFree BOOLEAN DEFAULT 0)',
         );
       },
       version: 1,
@@ -38,6 +38,7 @@ class ReservationAPI {
         location: maps[i]['location'] as String,
         isPinVerified: maps[i]['isPinVerified'] as int,
         isExpired: maps[i]['isExpired'] as int,
+        wasFree: maps[i]['wasFree'] as int,
       );
     });
   }
