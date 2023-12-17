@@ -252,7 +252,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 int bod = _wantsDryer ? 2 : 1;
 
                 if (profileProvider.isEditingReservation == false) {
-                  profileProvider.updateProfilePoints(profile, bod);
                   if (profileProvider.isUsingReward) {
                     if (profile.body >= cost) {
                       profileProvider.updateProfilePoints(profile, -cost);
@@ -301,30 +300,38 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   });
                   return;
                 }
-
-                Reservation newReservation = Reservation(
-                  machine: machineType,
-                  date: dateTime,
-                  location: location,
-                  isPinVerified: 0,
-                  isExpired: 0,
-                );
-
-                reservationProvider
-                    .providerInsertReservation(newReservation)
-                    .then((_) {
+                if (dateTime.isBefore(_focusedDay)) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Rezervácia úspešne bola uložená')),
+                        content: Text('Nemôžete rezervovať čas v minulosti')),
                   );
-                  widget.onNavigateToHomeScreen();
-                }).catchError((error) {
-                  print('Chyba pri ukladani rezervacie: $error');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Chyba pri ukladaní rezervácie')),
+                  return;
+                } else {
+                  Reservation newReservation = Reservation(
+                    machine: machineType,
+                    date: dateTime,
+                    location: location,
+                    isPinVerified: 0,
+                    isExpired: 0,
                   );
-                });
+
+                  reservationProvider
+                      .providerInsertReservation(newReservation)
+                      .then((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Rezervácia úspešne bola uložená')),
+                    );
+                    profileProvider.updateProfilePoints(profile, bod);
+                    widget.onNavigateToHomeScreen();
+                  }).catchError((error) {
+                    print('Chyba pri ukladani rezervacie: $error');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Chyba pri ukladaní rezervácie')),
+                    );
+                  });
+                }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Vyberte deň a čas rezervácie')),
@@ -341,26 +348,9 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
 
   ElevatedButton _buildTimeButton(String time) {
     bool isReserved = isTimeSlotReserved(_selectedDay, time);
-    bool isPastTimeOnToday = false;
-
-    if (_selectedDay != null) {
-      DateTime now = DateTime.now();
-      DateTime slotDateTime = DateTime(
-        _selectedDay!.year,
-        _selectedDay!.month,
-        _selectedDay!.day,
-        int.parse(time.split(':')[0]),
-        int.parse(time.split(':')[1]),
-      );
-
-      // Check if the time slot is in the past on today's date
-      isPastTimeOnToday = _selectedDay!
-              .isAtSameMomentAs(DateTime(now.year, now.month, now.day)) &&
-          slotDateTime.isBefore(now);
-    }
 
     return ElevatedButton(
-      onPressed: (isReserved || isPastTimeOnToday)
+      onPressed: isReserved
           ? null
           : () {
               setState(() {
@@ -378,8 +368,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           (states) {
             if (isReserved) {
               return Colors.red;
-            } else if (isPastTimeOnToday) {
-              return Colors.pink.shade100; // Light pink for past times on today
             } else if (_selectedTime == time) {
               return Theme.of(context).primaryColor;
             }
@@ -388,7 +376,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
         ),
         foregroundColor: MaterialStateProperty.resolveWith<Color>(
           (states) {
-            if (isReserved || isPastTimeOnToday || (_selectedTime == time)) {
+            if (isReserved || (_selectedTime == time)) {
               return Colors.white;
             }
             return Colors.black;
