@@ -1,3 +1,7 @@
+/// account.dart
+/// struktura Account na ukladanie stavu a transakcie
+/// 
+/// Autor: Jan Findra (xfindr01)
 class Account {
   int? id = 1;
   int? balance = 0;

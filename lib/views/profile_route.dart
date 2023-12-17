@@ -1,3 +1,10 @@
+/// profile_route.dart
+/// obrazovka profilu
+///
+/// Autor: Jan Findra (xfindr01)
+///
+/// Sprava profilu, financii, dobyjanie penazi, historia rezervacii a transakcii
+///
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vyperto/assets/colors.dart';

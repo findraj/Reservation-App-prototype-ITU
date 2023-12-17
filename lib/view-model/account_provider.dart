@@ -1,3 +1,7 @@
+/// account_provider.dart
+/// provider pre databazu account
+/// 
+/// Autor: Jan Findra (xfindr01)
 import 'package:flutter/foundation.dart';
 import 'package:vyperto/api/account_api.dart';
 import 'package:vyperto/model/account.dart';
