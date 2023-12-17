@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:vyperto/view-model/account_provider.dart';
 import 'views/page_controller.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
@@ -17,6 +19,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => ProfileProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AccountProvider(),
         ),
       ],
       child: MaterialApp(

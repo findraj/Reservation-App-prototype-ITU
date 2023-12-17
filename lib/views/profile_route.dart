@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vyperto/assets/colors.dart';
+import 'package:vyperto/model/account.dart';
 import 'package:vyperto/model/reservation.dart';
 import 'package:vyperto/model/profile.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
+import 'package:vyperto/view-model/account_provider.dart';
 
 class ProfileRoute extends StatefulWidget {
   const ProfileRoute({super.key});
@@ -58,6 +60,11 @@ class _ProfileRouteState extends State<ProfileRoute> {
                 });
                 if (chargedMoney > 0){
                   Provider.of<ProfileProvider>(context, listen: false).updateProfileBalance(Provider.of<ProfileProvider>(context, listen: false).profile, chargedMoney);
+                  Account account = Account(
+                    balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
+                    price: chargedMoney,
+                    );
+                  Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
                 }
                 else{
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -79,6 +86,56 @@ class _ProfileRouteState extends State<ProfileRoute> {
     );
   }
 
+  Future<void> _showAccountHistory() async {
+    List<Account> historyAccounts = Provider.of<AccountProvider>(context, listen: false).accountsList;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('História financií'),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              itemCount: historyAccounts.length,
+              itemBuilder: (context, index) {
+                Account account = historyAccounts[historyAccounts.length - 1 - index];
+                return ListTile(
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children:[
+                    Text(
+                      '${account.price}',
+                      style: TextStyle(
+                        color: (account.price! > 0) ? Colors.green : Colors.red,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    Text(
+                      '${account.balance! - account.price!} CZK\n${account.balance} CZK',
+                      ),
+                    ]
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Vymazať históriu'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Zrušiť'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   // Function to edit user profile
   Future<void> _editProfile() async {
     TextEditingController _nameController = TextEditingController(text: Provider.of<ProfileProvider>(context, listen: false).profile.meno);
@@ -89,7 +146,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Profile'),
+          title: Text('Upraviť profil'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -110,7 +167,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: Text('Zrušiť'),
             ),
             TextButton(
               onPressed: () {
@@ -133,7 +190,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
 
                 Navigator.pop(context);
               },
-              child: Text('Save Changes'),
+              child: Text('Uložiť'),
             ),
           ],
         );
@@ -237,13 +294,24 @@ class _ProfileRouteState extends State<ProfileRoute> {
 
           const SizedBox(height: 24),
 
-          Text(
-            '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK   ${Provider.of<ProfileProvider>(context, listen: false).profile.body} bodov',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            )
+          Row(
+            children:[
+              Text(
+                '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK   ${Provider.of<ProfileProvider>(context, listen: false).profile.body} bodov',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                )
+              ),
+
+              const SizedBox(width: 10),
+              Spacer(),
+              IconButton(
+                onPressed: _showAccountHistory,
+                icon: const Icon(Icons.search),
+              ),
+            ]
           ),
 
           const SizedBox(height: 24),
