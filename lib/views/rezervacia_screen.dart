@@ -250,28 +250,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                     _wantsDryer ? "Pranie a sušenie" : "Pranie";
                 int cost = calculateCost();
                 int bod = _wantsDryer ? 2 : 1;
-
-                if (profileProvider.isEditingReservation == false) {
-                  if (profileProvider.isUsingReward) {
-                    if (profile.body >= cost) {
-                      profileProvider.updateProfilePoints(profile, -cost);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Nedostatok vernostných bodov')),
-                      );
-                      return;
-                    }
-                  } else {
-                    if (profile.zostatok < cost) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Nedostatok kreditov na účte')),
-                      );
-                      return;
-                    }
-                  }
-                }
                 if (profileProvider.isEditingReservation == true) {
                   Reservation currentReservation =
                       profileProvider.currentReservation;
@@ -317,7 +295,29 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                       const SnackBar(
                           content: Text('Rezervácia úspešne bola uložená')),
                     );
-                    profileProvider.updateProfileBalance(profile, -cost);
+                    if (profileProvider.isEditingReservation == false) {
+                      if (profileProvider.isUsingReward) {
+                        if (profile.body >= cost) {
+                          profileProvider.updateProfilePoints(profile, -cost);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Nedostatok vernostných bodov')),
+                          );
+                          return;
+                        }
+                      } else {
+                        if (profile.zostatok < cost) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Nedostatok kreditov na účte')),
+                          );
+                          return;
+                        } else {
+                          profileProvider.updateProfileBalance(profile, -cost);
+                        }
+                      }
+                    }
                     profileProvider.updateProfilePoints(profile, bod);
                     widget.onNavigateToHomeScreen();
                   }).catchError((error) {
