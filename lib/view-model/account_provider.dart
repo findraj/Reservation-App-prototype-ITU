@@ -1,3 +1,16 @@
+/// AccountProvider - Poskytovatel stavu a funkcnosti pre spravu uctov.
+///
+/// Tato trieda spravuje zoznam uctov (accounts) a interaguje s AccountAPI
+/// pre ziskavanie, vkladanie a mazanie uctov z backendu.
+///
+/// ## Funkcie
+/// - Umoznuje ziskavat zoznam vsetkych uctov.
+/// - Poskytuje metody pre vkladanie a mazanie uctov.
+/// - Pouziva `ChangeNotifier` pre aktualizaciu UI v reakcii na zmeny stavu.
+///
+/// ## Pouzitie
+/// Pouziva sa v spojeni s `Provider` balickom pre spristupnenie dat
+/// o uctoch cez celej aplikacii.
 import 'package:flutter/foundation.dart';
 import 'package:vyperto/api/account_api.dart';
 import 'package:vyperto/model/account.dart';
@@ -17,7 +30,7 @@ class AccountProvider extends ChangeNotifier {
     final List<Account> fetchedAccounts = await _accountApi.fetchAccounts();
     _accounts = fetchedAccounts;
 
-    notifyListeners(); // Notify listeners to rebuild UI if necessary.
+    notifyListeners();
   }
 
   Future<void> providerInsertAccount(
@@ -26,11 +39,11 @@ class AccountProvider extends ChangeNotifier {
     await _accountApi.insertAccount(account);
     await fetchAccounts();
   }
-  
+
   Future<void> providerDeleteAccount(
     Account account,
-    ) async {
-      await _accountApi.deleteAccount(account); // Corrected to pass a Reservation object
-      await fetchAccounts();
-  } // Refresh the list of reservations
+  ) async {
+    await _accountApi.deleteAccount(account);
+    await fetchAccounts();
+  }
 }

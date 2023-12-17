@@ -1,3 +1,16 @@
+/// ProfileProvider - Poskytovatel stavu a funkcnosti pre spravu uzivatelskych profilov.
+///
+/// Tato trieda spravuje uzivatelsky profil a interaguje s ProfileAPI
+/// pre ziskavanie, aktualizaciu a manipulaciu s profilovymi datami.
+///
+/// ## Funkcie
+/// - Umoznuje ziskavat a aktualizovat uzivatelsky profil.
+/// - Poskytuje metody pre manipulaciu s bilanciou a vernostnymi bodmi uzivatela.
+/// - Spravuje stav, ci uzivatel pouziva vernostne odmeny alebo edituje rezervacie.
+///
+/// ## Pouzitie
+/// Pouziva sa v spojeni s `Provider` balickom pre spristupnenie dat
+/// o uzivatelskom profile cez celej aplikacii.
 import 'package:flutter/foundation.dart';
 import 'package:vyperto/api/profile_api.dart';
 import 'package:vyperto/model/profile.dart';
@@ -10,7 +23,14 @@ class ProfileProvider extends ChangeNotifier {
 
   ProfileProvider() {
     _profileApi = ProfileAPI();
-    _profile = Profile(meno: "", priezvisko: "", email: "", zostatok: 0, body: 0, miesto: "", darkMode: 0);
+    _profile = Profile(
+        meno: "",
+        priezvisko: "",
+        email: "",
+        zostatok: 0,
+        body: 0,
+        miesto: "",
+        darkMode: 0);
     fetchProfile(_profile);
   }
 
