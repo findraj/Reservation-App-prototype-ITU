@@ -30,7 +30,7 @@ Future<void> initializeUser() async {
   try {
     // Initialization logic here
     Profile profile = Profile(
-      meno: 'Janko',
+      meno: 'Marko',
       priezvisko: 'Mrkvicka',
       email: 'janko@example.com',
       zostatok: 1000,
