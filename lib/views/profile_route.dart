@@ -87,53 +87,65 @@ class _ProfileRouteState extends State<ProfileRoute> {
   }
 
   Future<void> _showAccountHistory() async {
-    List<Account> historyAccounts = Provider.of<AccountProvider>(context, listen: false).accountsList;
+    // Fetch accounts once using Provider outside the Consumer
+    Provider.of<AccountProvider>(context, listen: false).fetchAccounts();
+  
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('História financií'),
-          content: Container(
-            width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: historyAccounts.length,
-              itemBuilder: (context, index) {
-                Account account = historyAccounts[historyAccounts.length - 1 - index];
-                return ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children:[
-                    Text(
-                      '${account.price! > 0 ? '+' : ''}${account.price} CZK',
-                      style: TextStyle(
-                        color: (account.price! > 0) ? Colors.green : Colors.red,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        ),
+        return Consumer<AccountProvider>(
+          builder: (context, accountProvider, child) {
+            List<Account> historyAccounts = accountProvider.accountsList;
+  
+            return AlertDialog(
+              title: Text('História financií'),
+              content: Container(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  itemCount: historyAccounts.length,
+                  itemBuilder: (context, index) {
+                    Account account = historyAccounts[historyAccounts.length - 1 - index];
+                    return ListTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${account.price! > 0 ? '+' : ''}${account.price} CZK',
+                            style: TextStyle(
+                              color: (account.price! > 0) ? Colors.green : Colors.red,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '${account.balance} CZK\n${account.balance! - account.price!} CZK',
+                          ),
+                        ],
                       ),
-                    Text(
-                      '${account.balance} CZK\n${account.balance! - account.price!} CZK',
-                      ),
-                    ]
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: (){
-                for (Account account in List.from(historyAccounts)){
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Delete all accounts in historyAccounts
+                    for (Account account in List.from(historyAccounts)) {
                       Provider.of<AccountProvider>(context, listen: false).providerDeleteAccount(account);
-                };
-              },
-              child: Text('Vymazať históriu'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Zrušiť'),
-            ),
-          ],
+                    }
+                    // Update the UI by fetching accounts again
+                    accountProvider.fetchAccounts();
+                    Navigator.pop(context);
+                  },
+                  child: Text('Vymazať históriu'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Zrušiť'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
