@@ -14,7 +14,6 @@ class OdmenyScreen extends StatefulWidget {
   _OdmenyScreenState createState() => _OdmenyScreenState();
 }
 
-// define constant for costs
 const int COST_WASHING = 10;
 const int COST_WASHING_DRYING = 17;
 
@@ -22,7 +21,6 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -64,7 +62,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 5),
-                                fetchedProfile.body < COST_WASHING ? Text("Dostupné od ${COST_WASHING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá!"),
+                                fetchedProfile.body < COST_WASHING ? Text("Dostupné od ${COST_WASHING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá! Cena: ${COST_WASHING} bodov"),
                                 const SizedBox(height: 5),
                               ],
                             ),
@@ -116,7 +114,7 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 5),
-                                fetchedProfile.body < COST_WASHING_DRYING ? Text("Dostupné od ${COST_WASHING_DRYING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá!"),
+                                fetchedProfile.body < COST_WASHING_DRYING ? Text("Dostupné od ${COST_WASHING_DRYING} bodov, máš: ${fetchedProfile.body}") : const Text("Hurá! Cena: ${COST_WASHING_DRYING} bodov"),
                                 const SizedBox(height: 5),
                               ],
                             ),
@@ -136,6 +134,8 @@ class _OdmenyScreenState extends State<OdmenyScreen> {
                                       style: TextStyle(fontSize: 12, color: Colors.white),
                                     ),
                                     onPressed: () {
+                                      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+                                      profileProvider.setUsingReward(true);
                                       widget.onNavigateToRezervacia();
                                     },
                                   ),

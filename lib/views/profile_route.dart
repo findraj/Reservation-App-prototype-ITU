@@ -210,6 +210,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
           machine: 'Machine ${random.nextInt(10) + 1}',
           isPinVerified: random.nextInt(2),
           isExpired: random.nextInt(2),
+          wasFree: random.nextInt(2),
         ),
       );
     }

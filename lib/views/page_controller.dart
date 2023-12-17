@@ -43,18 +43,6 @@ class _Page_ControllerState extends State<Page_Controller> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.ease,
     );
-    // Priprava prechodu z odmien do rezervacie
-    // if (_currentIndex == 3) {
-    //   RezervaciaScreen rezervaciaScreen;
-    //   rezervaciaScreen.receiveParameters(
-    //     points: true,
-    //   );
-    // } else {
-    //   RezervaciaScreen rezervaciaScreen;
-    //   rezervaciaScreen.receiveParameters(
-    //     points: false,
-    //   );
-    // }
   }
 
   void navigateToHomeScreen() {
@@ -108,10 +96,8 @@ class _Page_ControllerState extends State<Page_Controller> {
       body: PageView(
         onPageChanged: (int newIndex) {
           if (_currentIndex == 1 && !pageSkip) {
-            Provider.of<ProfileProvider>(context, listen: false)
-                .setEditingReservation(false);
-            Provider.of<ProfileProvider>(context, listen: false)
-                .setUsingReward(false);
+            Provider.of<ProfileProvider>(context, listen: false).setEditingReservation(false);
+            Provider.of<ProfileProvider>(context, listen: false).setUsingReward(false);
           }
           setState(() {
             _currentIndex = newIndex;
@@ -121,12 +107,7 @@ class _Page_ControllerState extends State<Page_Controller> {
           }
         },
         controller: _pageController,
-        children: [
-          HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen),
-          RezervaciaScreen(onNavigateToHomeScreen: navigateToHomeScreen),
-          const CasovacScreen(),
-          OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen)
-        ],
+        children: [HomeScreen(onNavigateToRezervacia: navigateToRezervaciaScreen), RezervaciaScreen(onNavigateToHomeScreen: navigateToHomeScreen), const CasovacScreen(), OdmenyScreen(onNavigateToRezervacia: navigateToRezervaciaScreen)],
       ),
       bottomNavigationBar: Container(
         decoration: boxDecoration,
@@ -134,10 +115,8 @@ class _Page_ControllerState extends State<Page_Controller> {
           currentIndex: _currentIndex,
           onTap: (int newIndex) {
             if (_currentIndex == 1 && !pageSkip) {
-              Provider.of<ProfileProvider>(context, listen: false)
-                  .setEditingReservation(false);
-              Provider.of<ProfileProvider>(context, listen: false)
-                  .setUsingReward(false);
+              Provider.of<ProfileProvider>(context, listen: false).setEditingReservation(false);
+              Provider.of<ProfileProvider>(context, listen: false).setUsingReward(false);
             }
             setState(() {
               _currentIndex = newIndex;

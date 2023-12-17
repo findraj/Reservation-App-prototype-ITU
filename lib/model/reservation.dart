@@ -5,6 +5,7 @@ class Reservation {
   String location;
   int isPinVerified = 0;
   int isExpired = 0;
+  int wasFree = 0;
 
   Reservation({
     this.id,
@@ -13,6 +14,7 @@ class Reservation {
     required this.location,
     required this.isPinVerified,
     required this.isExpired,
+    required this.wasFree,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,11 +24,12 @@ class Reservation {
       'location': location,
       'isPinVerified': isPinVerified,
       'isExpired': isExpired,
+      'wasFree': wasFree,
     };
   }
 
   @override
   String toString() {
-    return 'Reservation{id: $id, machine: $machine, date: $date, location: $location, isPinVerified: $isPinVerified, isExpired: $isExpired}';
+    return 'Reservation{id: $id, machine: $machine, date: $date, location: $location, isPinVerified: $isPinVerified, isExpired: $isExpired, wasFree: $wasFree}';
   }
 }
