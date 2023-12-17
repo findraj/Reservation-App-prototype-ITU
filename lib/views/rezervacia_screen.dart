@@ -1,6 +1,6 @@
 /// `RezervaciaScreen` sluzi ako obrazovka pre rezervaciu sluzieb v aplikacii.
 ///
-///  Autor: Filip Botlo xbotlo01
+///  Autor : Filip Botlo xbotlo01
 ///
 /// Tato obrazovka umoznuje uzivatelom vybrat datum a cas pre rezervaciu a
 /// poskytuje dalsie moznosti, ako je moznost rezervacie susicky.

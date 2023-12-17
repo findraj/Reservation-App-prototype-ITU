@@ -37,6 +37,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
   String _selectedPreset = '';
   AudioPlayer audioPlayer = AudioPlayer();
 
+  /// Filip  zaciatok
   void _startTimer() {
     if (_timer != null) {
       _timer!.cancel();
@@ -134,6 +135,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
     super.dispose();
   }
 
+  /// Autor: Jan Findra (xfindr01)
   Widget _customTimeTile(String time) {
     bool isSelected = _selectedPreset == time;
     return InkWell(
@@ -178,6 +180,8 @@ class _CasovacScreenState extends State<CasovacScreen> {
                 return ProfileHeader(profile: fetchedProfile);
               }),
             ),
+
+            /// Filip zaciatok
             const SizedBox(height: 40),
             InkWell(
               onTap: _setCustomTime,
@@ -201,6 +205,8 @@ class _CasovacScreenState extends State<CasovacScreen> {
                 ElevatedButton(
                     onPressed: _resetTimer, child: const Text('Reset'))
               ],
+
+              /// Filip koniec
             ),
             const SizedBox(height: 30),
             const Divider(),
