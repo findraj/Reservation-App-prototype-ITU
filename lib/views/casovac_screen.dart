@@ -82,7 +82,6 @@ class _CasovacScreenState extends State<CasovacScreen> {
     });
   }
 
-  /// Filip koniec
   Future<void> _setCustomTime() async {
     showCupertinoModalPopup(
         context: context,
@@ -136,6 +135,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
     super.dispose();
   }
 
+  /// Autor: Jan Findra (xfindr01)
   Widget _customTimeTile(String time) {
     bool isSelected = _selectedPreset == time;
     return InkWell(
