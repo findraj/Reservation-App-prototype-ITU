@@ -1,3 +1,15 @@
+/// `RezervaciaScreen` sluzi ako obrazovka pre rezervaciu sluzieb v aplikacii.
+///
+///  Autor: Filip Botlo xbotlo01
+///
+/// Tato obrazovka umoznuje uzivatelom vybrat datum a cas pre rezervaciu a
+/// poskytuje dalsie moznosti, ako je moznost rezervacie susicky.
+///
+/// ## Funkcionalita
+/// - Umoznuje vyber datumu a casu pomocou `TableCalendar`.
+/// - Poskytuje moznost rezervacie susicky.
+/// - Spaja sa s poskytovatelmi (providers) pre spracovanie rezervacie.
+///
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:vyperto/model/account.dart';
@@ -33,6 +45,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     _selectedDormitory =
         Provider.of<ProfileProvider>(context, listen: false).profile.miesto;
 
+    //nastavi najbliysi volny cas
     String findNearestAvailableTime() {
       DateTime now = DateTime.now();
       DateTime lastTimeSlotToday = DateTime(
@@ -43,7 +56,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
         int.parse(availableTimes.last.split(':')[1]),
       );
 
-      // If the current time is past the last slot of today, do not select any time for today
       if (now.isAfter(lastTimeSlotToday)) {
         return "";
       }
@@ -62,8 +74,6 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
           return time;
         }
       }
-
-      // If all times of the current day are reserved, return empty string
       return "";
     }
 
@@ -106,6 +116,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     super.dispose();
   }
 
+  // pocita v zavislosti na tom ci sme si vzbrali aj susenie
   int calculateCost() {
     bool editingReservation =
         Provider.of<ProfileProvider>(context, listen: false)
@@ -115,7 +126,7 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 .currentReservation
                 .machine ==
             "Pranie a sušenie";
-
+    //mozne kombinacie reyervovanych strojov a ci editujeme alebo robime novu
     if (editingReservation && includesDrying && _wantsDryer) {
       return 0;
     } else if (editingReservation && includesDrying && !_wantsDryer) {
@@ -129,9 +140,11 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
     }
   }
 
+  //casy do 7 do 20, potom uy neplatia rezervacie
   List<String> availableTimes = List<String>.generate(
       14, (index) => "${(index + 7).toString().padLeft(2, '0')}:00");
 
+  //kontroluje ci uz to je rezervovane aj v zavislosti na intraku
   bool isTimeSlotReserved(DateTime? selectedDay, String timeSlot) {
     if (selectedDay == null) return false;
 
@@ -251,7 +264,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                 return Container(
                   width: 70,
                   alignment: Alignment.center,
-                  child: _buildTimeButton(availableTimes[index]),
+                  child: _buildTimeButton(
+                      availableTimes[index]), //spravi rad casov
                 );
               },
             ),
@@ -322,7 +336,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                   if (profileProvider.isEditingReservation == false) {
                     if (profileProvider.isUsingReward) {
                       if (profile.body >= cost) {
-                        profileProvider.updateProfilePoints(profile, -cost);
+                        profileProvider.updateProfilePoints(profile,
+                            -cost); //odobere z bodov pri vyuziti odmeny
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -338,7 +353,8 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                         );
                         return;
                       } else {
-                        profileProvider.updateProfileBalance(profile, -cost);
+                        profileProvider.updateProfileBalance(
+                            profile, -cost); //odobere z balancu pri rezervacii
                         Account account = Account(
                           balance: Provider.of<ProfileProvider>(context,
                                   listen: false)

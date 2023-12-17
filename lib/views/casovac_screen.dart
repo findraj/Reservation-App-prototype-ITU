@@ -1,3 +1,18 @@
+/// CasovacScreen - obrazovka casovaca pre Flutter aplikaciu
+///
+///Autor: Ján Findra xfindr01 - Vyber času a predvolené časy
+///Autor: Filip Botlo xbotlo01 - Aktivačné tlačítka a budík
+///
+/// Táto obrazovka umožňuje užívateľom nastaviť a ovládať časovač
+/// pre rôzne účely. Užívateľ môže vybrať vlastný čas, alebo využiť
+/// predvolené časové intervaly.
+///
+/// ## Funkcionalita
+/// - Umožňuje nastaviť časovač na konkrétny čas pomocou CupertinoTimerPicker.
+/// - Poskytuje možnosti štartu, zastavenia a resetu časovača.
+/// - Integrácia s AudioPlayerom pre prehratie zvuku pri dosiahnutí nuly.
+/// - Možnosť výberu prednastavených časových intervalov.
+///
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart'; // Import the audioplayers package
@@ -20,7 +35,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
   Duration selectedDuration = Duration(hours: 0, minutes: 0, seconds: 0);
   bool _isRunning = false;
   String _selectedPreset = '';
-  AudioPlayer audioPlayer = AudioPlayer(); // Create an instance of AudioPlayer
+  AudioPlayer audioPlayer = AudioPlayer();
 
   void _startTimer() {
     if (_timer != null) {
@@ -32,7 +47,7 @@ class _CasovacScreenState extends State<CasovacScreen> {
       if (_duration.inSeconds == 0) {
         timer.cancel();
         setState(() => _isRunning = false);
-        _playSound(); // Play sound when timer reaches zero
+        _playSound(); // zahra budik na nule
       } else {
         setState(() => _duration -= const Duration(seconds: 1));
       }
@@ -44,7 +59,6 @@ class _CasovacScreenState extends State<CasovacScreen> {
     try {
       await audioPlayer.play(AssetSource('lg_washer.mp3'));
     } catch (e) {
-      // Log or handle the error here
       print("Error playing sound: $e");
     }
   }
