@@ -104,7 +104,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children:[
                     Text(
-                      '${account.price}',
+                      '${account.price! > 0 ? '+' : ''}${account.price} CZK',
                       style: TextStyle(
                         color: (account.price! > 0) ? Colors.green : Colors.red,
                         fontSize: 25,
@@ -112,7 +112,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
                         ),
                       ),
                     Text(
-                      '${account.balance! - account.price!} CZK\n${account.balance} CZK',
+                      '${account.balance} CZK\n${account.balance! - account.price!} CZK',
                       ),
                     ]
                   ),
@@ -122,7 +122,11 @@ class _ProfileRouteState extends State<ProfileRoute> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: (){
+                for (Account account in List.from(historyAccounts)){
+                      Provider.of<AccountProvider>(context, listen: false).providerDeleteAccount(account);
+                };
+              },
               child: Text('Vymazať históriu'),
             ),
             TextButton(

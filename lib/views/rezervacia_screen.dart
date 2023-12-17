@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:vyperto/model/account.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
+import 'package:vyperto/view-model/account_provider.dart';
 import 'package:vyperto/model/reservation.dart';
 import 'package:provider/provider.dart';
 import 'package:vyperto/views/odmeny_screen.dart';
@@ -289,6 +291,11 @@ class _ReservationScreenState extends State<RezervaciaScreen> {
                           return;
                         } else {
                           profileProvider.updateProfileBalance(profile, -cost);
+                          Account account = Account(
+                            balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
+                            price: -cost,
+                          );
+                          Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
                         }
                         profileProvider.updateProfilePoints(profile, bod);
                       }

@@ -25,5 +25,12 @@ class AccountProvider extends ChangeNotifier {
   ) async {
     await _accountApi.insertAccount(account);
     await fetchAccounts();
+  }
+  
+  Future<void> providerDeleteAccount(
+    Account account,
+    ) async {
+      await _accountApi.deleteAccount(account); // Corrected to pass a Reservation object
+      await fetchAccounts();
   } // Refresh the list of reservations
 }

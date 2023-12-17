@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
+import 'package:vyperto/view-model/account_provider.dart';
 import 'package:vyperto/model/reservation.dart';
 import 'package:vyperto/model/profile.dart';
+import 'package:vyperto/model/account.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:vyperto/assets/profile_info.dart';
@@ -309,6 +311,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       if (confirmDelete == true) {
                                         final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
                                         final int refundAmount = reservation.machine.contains("sušenie") ? COST_WASHING_DRYING : COST_WASHING;
+                                        Account account = Account(
+                                            balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
+                                            price: refundAmount,
+                                        );
+                                        Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
                                         final int body = reservation.machine.contains("sušenie") ? COST_WASHING_DRYING : COST_WASHING;
 
                                         if (reservation.wasFree == 1) {
