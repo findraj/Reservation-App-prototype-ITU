@@ -238,6 +238,17 @@ class _ProfileRouteState extends State<ProfileRoute> {
 
           const SizedBox(height: 24),
 
+          Text(
+            '${Provider.of<ProfileProvider>(context, listen: false).profile.zostatok} CZK',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            )
+          ),
+
+          const SizedBox(height: 24),
+
           TextButton(
             style: TextButton.styleFrom(backgroundColor: Color.fromARGB(255, 223, 223, 223)),
             onPressed: _changeBalance,
@@ -248,7 +259,7 @@ class _ProfileRouteState extends State<ProfileRoute> {
 
           // Laundry history section
           Text(
-            'História Prania',
+            'História',
             style: Theme.of(context).textTheme.headline6,
           ),
           const Divider(),
