@@ -1,3 +1,16 @@
+/// `OdmenyScreen` obrazovka s odmenami pre uzivatela.
+///
+///  Autor: Marko Olešák xolesa00
+///
+/// Obrazovka zobrazuje odmeny, ktore si uzivatel moze ziskat za body.
+/// Zobrazenie je v podobe zoznamu, ktory obsahuje karticky s odmenami.
+/// Kazda odmena ma svoju cenu v bodoch, ktora je zobrazena v karticke.
+///
+/// ## Funkcionalita
+/// - Zobrazenie odmien, ci uz dostupnych alebo nedostupnych.
+/// - Umoznuje pouzit odmenu, ak ma uzivatel dostatok bodov.
+///
+
 import 'package:flutter/material.dart';
 import 'package:vyperto/assets/colors.dart';
 import 'package:vyperto/view-model/profile_provider.dart';

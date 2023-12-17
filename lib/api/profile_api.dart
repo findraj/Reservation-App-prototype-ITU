@@ -1,3 +1,19 @@
+/// `profile_api` API profilu
+///
+///  Autor: Marko Olešák xolesa00
+/// 
+/// API profilu, ktore obsahuje vsetky potrebne metody na pracu s databazou.
+/// Obsahuje metody na vytvorenie, ziskanie, aktualizaciu a vymazanie profilu.
+///
+/// ## Funkcionalita
+/// - Vytvorenie databazy.
+/// - Vlozenie profilu do databazy.
+/// - Ziskanie profilu z databazy.
+/// - Aktualizacia profilu v databaze.
+/// - Manipulacia s zostatkom.
+/// - Manipulacia s bodmi.
+/// - a pod.
+///
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -10,7 +26,7 @@ class ProfileAPI {
       onCreate: (db, version) async {
         await db.execute(
           // 'DROP TABLE IF EXISTS profiles',
-          'CREATE TABLE profiles(id INTEGER PRIMARY KEY, meno TEXT, priezvisko TEXT, email TEXT, zostatok INTEGER, body INTEGER, miesto TEXT, darkMode INTEGER DEFAULT 0)',
+          'CREATE TABLE profiles(id INTEGER PRIMARY KEY, meno TEXT, priezvisko TEXT, email TEXT, zostatok INTEGER, body INTEGER, miesto TEXT)',
         );
       },
       version: 1,
@@ -45,7 +61,6 @@ class ProfileAPI {
         zostatok: maps[0]['zostatok'] as int,
         body: maps[0]['body'] as int,
         miesto: maps[0]['miesto'] as String,
-        darkMode: maps[0]['darkMode'] as int,
       );
     } else {
       throw Exception('Profile with id ${profile.id} not found');

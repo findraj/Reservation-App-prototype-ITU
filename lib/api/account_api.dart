@@ -27,7 +27,6 @@ class AccountAPI {
     );
 
     if (maps.isNotEmpty) {
-      // Use the existing Account instance's id
       return Account(
         id: maps[0]['id'] as int,
         balance: maps[0]['balance'] as int,

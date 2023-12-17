@@ -1,3 +1,14 @@
+/// `reservation` model rezervacie
+///
+///  Autor: Marko Olešák xolesa00
+///
+/// Model rezervacie, ktory obsahuje vsetky potrebne informacie o rezervacii.
+/// Obsahuje aj metody na prevod z a do mapy, ktore sa pouzivaju pri praci s databazou.
+///
+/// ## Funkcionalita
+/// - Uchovava informacie o rezervacii.
+/// - Metody na prevod z a do mapy.
+///
 class Reservation {
   int? id;
   String machine;

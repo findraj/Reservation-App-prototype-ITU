@@ -1,3 +1,14 @@
+/// `HomeScreen` domovska obrazovka, zobrazuje aktualne rezervacie
+///
+///  Autor: Marko Olešák xolesa00
+///
+/// Obrazovka poskytuje prehlad aktualnych rezervacii, ktore su zoradene podla datumu a casu.
+/// Umoznuje zrusenie rezervacie ako aj upravu existujucej rezervacie.
+///
+/// ## Funkcionalita
+/// - Zobrazenie informacii o profile, teda zostatok, pocet bodov a meno.
+/// - Zobrazuje aktualne rezervacie, ktore su zoradene podla datumu a casu.
+///
 import 'package:flutter/material.dart';
 import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:vyperto/view-model/reservation_provider.dart';
@@ -15,8 +26,7 @@ import 'package:vyperto/views/odmeny_screen.dart';
 class HomeScreen extends StatefulWidget {
   final VoidCallback onNavigateToRezervacia;
 
-  const HomeScreen({Key? key, required this.onNavigateToRezervacia})
-      : super(key: key);
+  const HomeScreen({Key? key, required this.onNavigateToRezervacia}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -39,8 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _timer = Timer.periodic(refreshRate, (timer) {
       if (mounted) {
-        final reservationProvider =
-            Provider.of<ReservationProvider>(context, listen: false);
+        final reservationProvider = Provider.of<ReservationProvider>(context, listen: false);
         reservationProvider.fetchReservations();
       } else {
         timer.cancel();
@@ -63,8 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
-            profileProvider.fetchProfile(
-                profileProvider.profile); // Nacitanie profilu z databazy
+            profileProvider.fetchProfile(profileProvider.profile); // Nacitanie profilu z databazy
             Profile fetchedProfile = profileProvider.profile;
             return ProfileHeader(profile: fetchedProfile);
           }),
@@ -137,9 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else {
                   return RefreshIndicator(
                     onRefresh: () async {
-                      final reservationProvider =
-                          Provider.of<ReservationProvider>(context,
-                              listen: false);
+                      final reservationProvider = Provider.of<ReservationProvider>(context, listen: false);
                       reservationProvider.fetchReservations();
                     },
                     child: ListView.builder(
@@ -148,23 +154,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         Reservation reservation = validReservations[index];
 
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(reservation.date);
-                        String formattedTime =
-                            (reservation.machine == "Pranie a sušenie")
-                                ? DateFormat('HH:mm').format(reservation.date) +
-                                    " - " +
-                                    DateFormat('HH:mm').format(reservation.date
-                                        .add(const Duration(hours: 2)))
-                                : DateFormat('HH:mm').format(reservation.date) +
-                                    " - " +
-                                    DateFormat('HH:mm').format(reservation.date
-                                        .add(const Duration(hours: 1)));
+                        String formattedDate = DateFormat('yyyy-MM-dd').format(reservation.date);
+                        String formattedTime = (reservation.machine == "Pranie a sušenie")
+                            ? DateFormat('HH:mm').format(reservation.date) + " - " + DateFormat('HH:mm').format(reservation.date.add(const Duration(hours: 2)))
+                            : DateFormat('HH:mm').format(reservation.date) + " - " + DateFormat('HH:mm').format(reservation.date.add(const Duration(hours: 1)));
 
-                        bool isNearest = index ==
-                            0; // Najblizsia rezervacia ma index 0 po sorte
-                        bool isSecondNearest = index ==
-                            1; // Druha najblizsia rezervacia ma index 1 po sorte
+                        bool isNearest = index == 0; // Najblizsia rezervacia ma index 0 po sorte
+                        bool isSecondNearest = index == 1; // Druha najblizsia rezervacia ma index 1 po sorte
 
                         return Card(
                           elevation: !(reservation.isPinVerified == 1) ? 5 : 3,
@@ -173,13 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: ListTile(
-                            title: Text("${reservation.machine}",
-                                style: (reservation.isPinVerified == 1)
-                                    ? const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color:
-                                            Color.fromARGB(255, 51, 213, 135))
-                                    : null),
+                            title: Text("${reservation.machine}", style: (reservation.isPinVerified == 1) ? const TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 51, 213, 135)) : null),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -190,12 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   "Dátum: $formattedDate",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: (isNearest || isSecondNearest) &&
-                                            !(reservation.isPinVerified == 1) &&
-                                            DateTime.now()
-                                                .isAfter(reservation.date)
-                                        ? Colors.red
-                                        : null, // If nearest reservation and time is past, then red
+                                    color: (isNearest || isSecondNearest) && !(reservation.isPinVerified == 1) && DateTime.now().isAfter(reservation.date) ? Colors.red : null, // If nearest reservation and time is past, then red
                                   ),
                                 ),
                                 const SizedBox(height: 5),
@@ -203,12 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   "Čas: $formattedTime",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: (isNearest || isSecondNearest) &&
-                                            !(reservation.isPinVerified == 1) &&
-                                            DateTime.now()
-                                                .isAfter(reservation.date)
-                                        ? Colors.red
-                                        : null,
+                                    color: (isNearest || isSecondNearest) && !(reservation.isPinVerified == 1) && DateTime.now().isAfter(reservation.date) ? Colors.red : null,
                                   ),
                                 ),
                               ],
@@ -216,20 +196,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Pole na zadanie pinu sa objavi 5 minut pred rezervaciou a zmizne, ak je rezervacia viac ako 15 minut po
-                                if ((isNearest || isSecondNearest) &&
-                                    reservation.isPinVerified != 1 &&
-                                    (DateTime.now().isAfter(reservation.date
-                                            .subtract(
-                                                const Duration(minutes: 10))) &&
-                                        DateTime.now().isBefore(reservation.date
-                                            .add(const Duration(minutes: 20)))))
+                                // Pole na zadanie pinu sa objavi 10 minut pred rezervaciou a zmizne, ak je rezervacia viac ako 15 minut po
+                                if ((isNearest || isSecondNearest) && reservation.isPinVerified != 1 && (DateTime.now().isAfter(reservation.date.subtract(const Duration(minutes: 10))) && DateTime.now().isBefore(reservation.date.add(const Duration(minutes: 15)))))
                                   SizedBox(
                                     width: 75,
                                     child: TextField(
-                                        controller: isNearest
-                                            ? _nearestpinController
-                                            : _secondpinController,
+                                        controller: isNearest ? _nearestpinController : _secondpinController,
                                         keyboardType: TextInputType.number,
                                         maxLength: 4,
                                         textAlign: TextAlign.center,
@@ -238,49 +210,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         onChanged: (String value) async {
                                           if (value.length == 4) {
-                                            bool pinOk =
-                                                await reservationProvider
-                                                    .providerCheckPin(
-                                                        int.parse(value),
-                                                        reservation);
+                                            bool pinOk = await reservationProvider.providerCheckPin(int.parse(value), reservation);
                                             if (pinOk) {
                                               setState(() {});
                                               // pin v poriadku
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
+                                              ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
-                                                  backgroundColor:
-                                                      Colors.greenAccent,
-                                                  content: Text(
-                                                      'Zadanie pinu úspešné!'),
-                                                  duration:
-                                                      Duration(seconds: 2),
+                                                  backgroundColor: Colors.greenAccent,
+                                                  content: Text('Zadanie pinu úspešné!'),
+                                                  duration: Duration(seconds: 2),
                                                 ),
                                               );
-                                              isNearest
-                                                  ? _nearestpinController
-                                                      .clear()
-                                                  : _secondpinController
-                                                      .clear();
+                                              isNearest ? _nearestpinController.clear() : _secondpinController.clear();
                                             } else {
                                               // Ak je pin nespravny, tak sa zobrazi snackbar s chybovou hlaskou
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
+                                              ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
-                                                  backgroundColor:
-                                                      Color.fromARGB(
-                                                          255, 255, 103, 103),
-                                                  content:
-                                                      Text('Nesprávny PIN!'),
-                                                  duration:
-                                                      Duration(seconds: 2),
+                                                  backgroundColor: Color.fromARGB(255, 255, 103, 103),
+                                                  content: Text('Nesprávny PIN!'),
+                                                  duration: Duration(seconds: 2),
                                                 ),
                                               );
-                                              isNearest
-                                                  ? _nearestpinController
-                                                      .clear()
-                                                  : _secondpinController
-                                                      .clear();
+                                              isNearest ? _nearestpinController.clear() : _secondpinController.clear();
                                             }
                                             // Overenie pinu
                                             print("User input : PIN: $value");
@@ -288,119 +239,76 @@ class _HomeScreenState extends State<HomeScreen> {
                                         }),
                                   ),
                                 const SizedBox(width: 15),
-                                if (DateTime.now().isBefore(reservation.date
-                                    .subtract(const Duration(hours: 2))))
+                                if (DateTime.now().isBefore(reservation.date.subtract(const Duration(hours: 2))))
                                   IconButton(
                                       iconSize: 24,
                                       padding: EdgeInsets.zero,
                                       constraints: const BoxConstraints(),
-                                      icon: const Icon(Icons.edit_calendar,
-                                          color: Colors
-                                              .blue), // You can replace Icons.edit with the desired edit icon
+                                      icon: const Icon(Icons.edit_calendar, color: Colors.blue), // You can replace Icons.edit with the desired edit icon
                                       onPressed: () {
-                                        final profileProvider =
-                                            Provider.of<ProfileProvider>(
-                                                context,
-                                                listen: false);
-                                        profileProvider
-                                            .setEditingReservation(true);
-                                        profileProvider
-                                            .setCurrentReservation(reservation);
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
+                                        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+                                        profileProvider.setEditingReservation(true);
+                                        profileProvider.setCurrentReservation(reservation);
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text(
-                                                'Vyberte nový čas rezervácie!'),
+                                            content: Text('Vyberte nový čas rezervácie!'),
                                             duration: Duration(seconds: 2),
                                           ),
                                         );
                                         widget.onNavigateToRezervacia();
                                       }),
                                 const SizedBox(width: 10),
-                                if (DateTime.now().isBefore(reservation.date
-                                    .subtract(const Duration(minutes: 10))))
+                                if (DateTime.now().isBefore(reservation.date.subtract(const Duration(minutes: 10))))
                                   IconButton(
                                     iconSize: 24,
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
+                                    icon: const Icon(Icons.delete, color: Colors.red),
                                     onPressed: () async {
-                                      bool? confirmDelete =
-                                          await showDialog<bool>(
-                                        barrierDismissible:
-                                            true, // Uzivatel moze kliknut mimo dialog a zrusit ho
+                                      bool? confirmDelete = await showDialog<bool>(
+                                        barrierDismissible: true, // Uzivatel moze kliknut mimo dialog a zrusit ho
                                         context: context,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            title: const Text(
-                                                "Potvrďte zmazanie rezervácie"),
-                                            content: const Text(
-                                                "Ste si istý, že chcete zmazať rezerváciu?"),
+                                            title: const Text("Potvrďte zmazanie rezervácie"),
+                                            content: const Text("Ste si istý, že chcete zmazať rezerváciu?"),
                                             actions: [
                                               ButtonBar(
-                                                alignment:
-                                                    MainAxisAlignment.center,
+                                                alignment: MainAxisAlignment.center,
                                                 children: [
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 8),
+                                                    padding: const EdgeInsets.only(right: 8),
                                                     child: TextButton(
-                                                      style:
-                                                          TextButton.styleFrom(
-                                                        backgroundColor:
-                                                            Colors.redAccent,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      8.0),
+                                                      style: TextButton.styleFrom(
+                                                        backgroundColor: Colors.redAccent,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(8.0),
                                                         ),
                                                       ),
                                                       onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop(true);
+                                                        Navigator.of(context).pop(true);
                                                       },
                                                       child: const Text(
                                                         "Áno",
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 18.0),
+                                                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0),
                                                       ),
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8),
+                                                    padding: const EdgeInsets.only(left: 8),
                                                     child: TextButton(
-                                                      style:
-                                                          TextButton.styleFrom(
-                                                        backgroundColor:
-                                                            Colors.greenAccent,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      8.0),
+                                                      style: TextButton.styleFrom(
+                                                        backgroundColor: Colors.greenAccent,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(8.0),
                                                         ),
                                                       ),
                                                       onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop(false);
+                                                        Navigator.of(context).pop(false);
                                                       },
                                                       child: const Text(
                                                         "Nie",
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 18.0),
+                                                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0),
                                                       ),
                                                     ),
                                                   ),
@@ -412,50 +320,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
 
                                       if (confirmDelete == true) {
-                                        final profileProvider =
-                                            Provider.of<ProfileProvider>(
-                                                context,
-                                                listen: false);
-                                        final int refundAmount = reservation
-                                                .machine
-                                                .contains("sušenie")
-                                            ? COST_WASHING_DRYING
-                                            : COST_WASHING;
-                                        final int body = reservation.machine
-                                                .contains("sušenie")
-                                            ? COST_WASHING_DRYING
-                                            : COST_WASHING;
-                                        final int takePoint = reservation
-                                                .machine
-                                                .contains("sušenie")
-                                            ? 2
-                                            : 1;
+                                        final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+                                        final int refundAmount = reservation.machine.contains("sušenie") ? COST_WASHING_DRYING : COST_WASHING;
+                                        final int body = reservation.machine.contains("sušenie") ? COST_WASHING_DRYING : COST_WASHING;
+                                        final int takePoint = reservation.machine.contains("sušenie") ? 2 : 1;
 
                                         if (reservation.wasFree == 1) {
                                           // -1 lebo bol bod pridany pri vytvoreni rezervacie
-                                          profileProvider.updateProfilePoints(
-                                              profileProvider.profile, body);
+                                          profileProvider.updateProfilePoints(profileProvider.profile, body);
                                         } else {
-                                          profileProvider.updateProfileBalance(
-                                              profileProvider.profile,
-                                              refundAmount);
+                                          profileProvider.updateProfileBalance(profileProvider.profile, refundAmount);
                                           Account account = Account(
                                             balance: Provider.of<ProfileProvider>(context, listen: false).profile.zostatok,
                                             price: refundAmount,
                                           );
                                           Provider.of<AccountProvider>(context, listen: false).providerInsertAccount(account);
                                         }
-                                        profileProvider.updateProfilePoints(
-                                            profileProvider.profile,
-                                            -takePoint);
-                                        reservationProvider
-                                            .providerDeleteReservation(
-                                                reservation);
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                              content: Text(
-                                                  'Rezervácia bola úspešne zrušená, peniaze/body vám boli vrátené na konto')),
+                                        profileProvider.updateProfilePoints(profileProvider.profile, -takePoint);
+                                        reservationProvider.providerDeleteReservation(reservation);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Rezervácia bola úspešne zrušená, peniaze/body vám boli vrátené na konto')),
                                         );
                                       }
                                     },

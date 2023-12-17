@@ -1,5 +1,16 @@
+/// `main` hlavny program aplikacie.
+///
+///  Autor: Marko Olešák xolesa00
+/// 
+/// Hlavny program aplikacie, ktory sa spusta pri spusteni aplikacie.
+/// Obsahuje inicializaciu databazy a spustenie aplikacie.
+///
+/// ## Funkcionalita
+/// - Staticka inicializacia uzivatela, kedze aplikacia nema prihlasovanie.
+/// - Spustenie aplikacie.
+///
+
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:vyperto/view-model/account_provider.dart';
 import 'views/page_controller.dart';
@@ -25,7 +36,7 @@ void main() async {
         ),
       ],
       child: MaterialApp(
-        home: Page_Controller(), // This widget should expect two databases
+        home: Page_Controller(),
       ),
     ),
   );
@@ -33,7 +44,6 @@ void main() async {
 
 Future<void> initializeUser() async {
   try {
-    // Initialization logic here
     Profile profile = Profile(
       meno: 'Marko',
       priezvisko: 'Mrkvicka',
@@ -41,7 +51,6 @@ Future<void> initializeUser() async {
       zostatok: 1000,
       body: 15,
       miesto: 'Koleje pod Palackého vrchem',
-      darkMode: 0,
     );
 
     ProfileAPI _profileAPI = ProfileAPI();

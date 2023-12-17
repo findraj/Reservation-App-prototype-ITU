@@ -1,3 +1,19 @@
+/// `reservation_api` API rezervacie
+///
+///  Autor: Marko Olešák xolesa00
+/// 
+/// API rezervacie, ktore obsahuje vsetky potrebne metody na pracu s databazou.
+/// Obsahuje metody na vytvorenie, ziskanie, aktualizaciu a vymazanie rezervacie.
+///
+/// ## Funkcionalita
+/// - Vytvorenie databazy.
+/// - Vytvorenie tabulky rezervacii.
+/// - Vlozenie rezervacie do databazy.
+/// - Ziskanie rezervacii z databazy.
+/// - Aktualizacia rezervacie v databaze.
+/// - Vymazanie rezervacie z databazy.
+/// - Skontrolovanie pinu.
+///
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';

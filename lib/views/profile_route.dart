@@ -200,7 +200,6 @@ class _ProfileRouteState extends State<ProfileRoute> {
                   zostatok: previousProfile.zostatok,
                   body: previousProfile.body,
                   miesto: previousProfile.miesto,
-                  darkMode: previousProfile.darkMode,
                 );
                 Provider.of<ProfileProvider>(context, listen: false).providerInsertProfile(newProfile);
 
@@ -297,7 +296,6 @@ class _ProfileRouteState extends State<ProfileRoute> {
                 zostatok: previousProfile.zostatok,
                 body: previousProfile.body,
                 miesto: newValue!,
-                darkMode: previousProfile.darkMode,
               );
               Provider.of<ProfileProvider>(context, listen: false).providerInsertProfile(newProfile);
             },
