@@ -281,43 +281,131 @@ class _HomeScreenState extends State<HomeScreen> {
                                     icon: const Icon(Icons.delete,
                                         color: Colors.red),
                                     onPressed: () async {
-                                      final profileProvider =
-                                          Provider.of<ProfileProvider>(context,
-                                              listen: false);
-                                      final int refundAmount = reservation
-                                              .machine
-                                              .contains("sušenie")
-                                          ? 17
-                                          : 10;
-                                      final int bod = reservation.machine
-                                              .contains("sušenie")
-                                          ? 2
-                                          : 1;
-                                      await reservationProvider
-                                          .providerDeleteReservation(
-                                              reservation)
-                                          .then((_) {
-                                        profileProvider.updateProfileBalance(
-                                            profileProvider.profile,
-                                            refundAmount);
-                                        profileProvider.updateProfilePoints(
-                                            profileProvider.profile, -bod);
-                                      }).catchError((error) {
-                                        print(
-                                            'Error deleting reservation: $error');
+                                      bool? confirmDelete =
+                                          await showDialog<bool>(
+                                        barrierDismissible: true,
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                                "Potvrďte zmazanie rezervácie"),
+                                            content: const Text(
+                                                "Ste si istý, že chcete zmazať rezerváciu?"),
+                                            actions: [
+                                              ButtonBar(
+                                                alignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8),
+                                                    child: TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            Colors.redAccent,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      8.0),
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop(
+                                                            true); // User confirmed
+                                                      },
+                                                      child: const Text(
+                                                        "Áno",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 18.0),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8),
+                                                    child: TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            Colors.greenAccent,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      8.0),
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop(
+                                                            false); // User canceled
+                                                      },
+                                                      child: const Text(
+                                                        "Nie",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 18.0),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+
+                                      if (confirmDelete == true) {
+                                        final profileProvider =
+                                            Provider.of<ProfileProvider>(
+                                                context,
+                                                listen: false);
+                                        final int refundAmount = reservation
+                                                .machine
+                                                .contains("sušenie")
+                                            ? 17
+                                            : 10;
+                                        final int body = reservation.machine
+                                                .contains("sušenie")
+                                            ? 2
+                                            : 1;
+                                        await reservationProvider
+                                            .providerDeleteReservation(
+                                                reservation)
+                                            .then((_) {
+                                          profileProvider.updateProfileBalance(
+                                              profileProvider.profile,
+                                              refundAmount);
+                                          profileProvider.updateProfilePoints(
+                                              profileProvider.profile, -body);
+                                        }).catchError((error) {
+                                          print(
+                                              'Error deleting reservation: $error');
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                                content: Text(
+                                                    'Error deleting reservation')),
+                                          );
+                                        });
+
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(
+                                          const SnackBar(
                                               content: Text(
-                                                  'Error deleting reservation')),
+                                                  'Rezervácia bola úspešne zrušená, peniaze vám boli vrátené na konto')),
                                         );
-                                      });
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Rezervácia bola úspešne zrušená, peniaze vám boli vrátené na konto')),
-                                      );
+                                      }
                                     },
                                   ),
                                 ],
