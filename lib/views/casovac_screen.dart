@@ -5,6 +5,7 @@ import 'package:vyperto/view-model/profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:vyperto/assets/profile_info.dart';
 import 'package:vyperto/model/profile.dart';
+import 'package:flutter/cupertino.dart';
 
 class CasovacScreen extends StatefulWidget {
   const CasovacScreen({super.key});
@@ -16,6 +17,7 @@ class CasovacScreen extends StatefulWidget {
 class _CasovacScreenState extends State<CasovacScreen> {
   Timer? _timer;
   Duration _duration = Duration();
+  Duration selectedDuration = Duration(hours: 0,minutes: 0,seconds: 0);
   bool _isRunning = false;
   String _selectedPreset = '';
   AudioPlayer audioPlayer = AudioPlayer(); // Create an instance of AudioPlayer
@@ -66,66 +68,51 @@ class _CasovacScreenState extends State<CasovacScreen> {
   }
 
   Future<void> _setCustomTime() async {
-    TextEditingController hoursController = TextEditingController();
-    TextEditingController minutesController = TextEditingController();
-    TextEditingController secondsController = TextEditingController();
-
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Set Custom Time'),
-          content: Row(
-            children: <Widget>[
-              Expanded(
-                child: TextField(
-                  controller: hoursController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(hintText: "Hours"),
+    showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context){
+          return Container(
+            height: 200,
+            color: CupertinoColors.white,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CupertinoButton(
+                      child: Text("Zrušiť"),
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    CupertinoButton(
+                      child: Text("Uložiť"),
+                      onPressed: () {
+                        setState(() {
+                          _duration = selectedDuration;
+                          _selectedPreset = '';
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: minutesController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(hintText: "Minutes"),
-                ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: secondsController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(hintText: "Seconds"),
-                ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+                Expanded(
+                  child: CupertinoTimerPicker(
+                     mode: CupertinoTimerPickerMode.hms,
+                      initialTimerDuration: selectedDuration,
+                      onTimerDurationChanged:  (Duration duration){
+                       setState(() {
+                         selectedDuration = duration;
+                       });
+                      }
+                  ),
+                )
+              ],
             ),
-            TextButton(
-              child: const Text('Set'),
-              onPressed: () {
-                final int hours = int.tryParse(hoursController.text) ?? 0;
-                final int minutes = int.tryParse(minutesController.text) ?? 0;
-                final int seconds = int.tryParse(secondsController.text) ?? 0;
-                setState(() {
-                  _duration = Duration(hours: hours, minutes: minutes, seconds: seconds);
-                  _selectedPreset = '';
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+          );
+        }
         );
-      },
-    );
   }
 
   @override
@@ -187,13 +174,13 @@ class _CasovacScreenState extends State<CasovacScreen> {
             const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [ElevatedButton(onPressed: _isRunning ? null : _startTimer, child: const Text('Start')), ElevatedButton(onPressed: _stopTimer, child: const Text('Stop')), ElevatedButton(onPressed: _resetTimer, child: const Text('Reset'))],
+              children: [ElevatedButton(onPressed: _isRunning ? null : _startTimer, child: const Text('Štart')), ElevatedButton(onPressed: _stopTimer, child: const Text('Stop')), ElevatedButton(onPressed: _resetTimer, child: const Text('Reset'))],
             ),
             const SizedBox(height: 30),
             const Divider(),
             const SizedBox(height: 20),
             const Text(
-              'Presets',
+              'Predvoľby',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
